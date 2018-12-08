@@ -1,4 +1,4 @@
-package Coords;
+package GIS;
 
 public class Path {
 
