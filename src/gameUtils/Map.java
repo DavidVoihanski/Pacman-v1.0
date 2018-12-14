@@ -1,16 +1,13 @@
 package gameUtils;
 
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.InvalidPropertiesFormatException;
 
 import javax.imageio.ImageIO;
-import javax.xml.crypto.dsig.keyinfo.PGPData;
 
 import Coords.GpsCoord;
-import GUI.MyFrame;
+import GUI.MyFrame_2;
 import Geom.Point3D;
 
 public class Map {
@@ -18,15 +15,14 @@ public class Map {
 	private GpsCoord bottomRightP;
 	private BufferedImage mapImage;
 	private double pixelMeterRatio;
-	private static final Point3D topLeftPixelCoord=new Point3D(11,75,0);
+	private static final Point3D topLeftPixelCoord = new Point3D(11, 73, 0);
 
-	//constructors://
-	//def constructor 
+	// constructors://
+	// def constructor
 	public Map() throws IOException {
 		this.topLeftP = new GpsCoord(32.10574, 35.20228, 0);
 		this.bottomRightP = new GpsCoord(32.10192, 35.21231, 0);
 		mapImage = ImageIO.read(new File("Ariel1.png"));
-		calcRatio();
 	}
 
 	// custom constructor//
@@ -36,7 +32,7 @@ public class Map {
 		this.mapImage = ImageIO.read(new File(imagePath));
 	}
 
-	//getters//
+	// getters//
 	public BufferedImage getImage() throws IOException {
 		return mapImage;
 	}
@@ -45,27 +41,32 @@ public class Map {
 	public void setImage(BufferedImage inputImage) throws IOException {
 		mapImage = inputImage;
 	}
-	public GpsCoord clickedToAddPoint() throws InvalidPropertiesFormatException {
-		GpsCoord wantedPoint=new GpsCoord(topLeftP.add(calcDiffMeterVector()));
+
+	public GpsCoord clickedToAddPoint() throws IOException {
+		GpsCoord wantedPoint = new GpsCoord(topLeftP.add(calcDiffMeterVector()));
 		return wantedPoint;
 	}
-	////private function section///
-	private void calcRatio() {
-		int height=this.mapImage.getHeight();
-		int width=this.mapImage.getWidth();
-		double diagonal=Math.sqrt(Math.pow(height, 2)+Math.pow(width, 2));
-		double distance=this.topLeftP.distance2D(this.bottomRightP);
-		pixelMeterRatio=distance/diagonal;
-	}
-	private Point3D calcDiffMeterVector() {
-		Point3D pointClicked=MyFrame.lastClicked;
-		double diffX=pointClicked.x()-topLeftPixelCoord.x();
-		double diffY=topLeftPixelCoord.y()-pointClicked.y();
-		Point3D meterVector=new Point3D(diffY*pixelMeterRatio,diffX*pixelMeterRatio,0);
-		return meterVector;
 
+	//// private function section///
+	private void calcRatio() {
+		int height = MyFrame_2.heigth;
+		int width = MyFrame_2.width;
+		double diagonal = Math.sqrt(Math.pow(height, 2) + Math.pow(width, 2));
+		double distance = this.topLeftP.distance2D(this.bottomRightP);
+		pixelMeterRatio = distance / diagonal;
 	}
-	//private String splitStringForPath (String inputString) {
-	//	String withOutSlash [] = inputString.split("/");
-	//}
-}
+
+	private Point3D calcDiffMeterVector() throws IOException {
+		calcRatio();
+		Point3D pointClicked = MyFrame_2.lastClicked;
+		double diffX = pointClicked.x() - topLeftPixelCoord.x();
+		double diffY = topLeftPixelCoord.y() - pointClicked.y();
+		Point3D meterVector = new Point3D(diffY * pixelMeterRatio, diffX * pixelMeterRatio, 0);
+		System.out.println(meterVector);
+		return meterVector;
+		}
+	}
+	// private String splitStringForPath (String inputString) {
+	// String withOutSlash [] = inputString.split("/");
+	// }
+
