@@ -31,50 +31,63 @@ public class MyCoords implements coords_converter {
 	 */
 	@Override
 	public Point3D add(Point3D gps, Point3D local_vector_in_meter) {
-		// checking whether the point is valid GPS coordinates, if is is- do
-		// the calculation
-		if (isValid_GPS_Point(gps)
-				&& (local_vector_in_meter.x() < diastanceLimit && local_vector_in_meter.y() < diastanceLimit)) {
-			// converting the decimal degrees to radian
-			double radianLat = Point3D.d2r(gps.x());
-			double radianLon = Point3D.d2r(gps.y());
-			// converting the radian to meter
-			double meterLat = r2mLat(radianLat);
-			double meterLon = r2mLon(radianLon, 1);
-			// adding the meters from the vector to the one we got
-			double gps1MeterLat = meterLat + local_vector_in_meter.x();
-			double gps1MeterLon = meterLon + local_vector_in_meter.y();
-			double gps1MeterAlt = gps.z() + local_vector_in_meter.z();
-			// converting the meter back to radian
-			double radianGps1Lat = m2rLat(gps1MeterLat);
-			double radianGps1Lon = m2rLon(gps1MeterLon,1);
-			// converting the radian back to decimal degrees
-			double gps1Lat = Point3D.r2d(radianGps1Lat);
-			double gps1Lon = Point3D.r2d(radianGps1Lon);
-			Point3D output = new Point3D(gps1Lat, gps1Lon, gps1MeterAlt);
-			// returning the GPS point of Point3d type
-			if (isValid_GPS_Point(output)) {
-				return output;
-			}
-			// checking whether the distance added is more than the maximum distance limit
-			else if (local_vector_in_meter.x() > diastanceLimit || local_vector_in_meter.y() > diastanceLimit) {
-				System.out.println("ERR: you are trying to add more than the distance limit 100KM");
-				return gps;
-			}
-			// checking whether after the vector addition the point is still a valid GPS
-			// coord
-			else {
-				System.out.println(
-						"ERR: the sum of this vector with this given GPS coord is not a valid GPS coord, returning the input GPS coord");
-				return gps;
-			}
-		}
-		// if its not (a valid GPS coordinates) print a message and return the point
-		// value as we got it
-		else {
-			System.out.println("first arg isnt a valid GPS coord, returning the input without changes");
-			return gps;
-		}
+//		 checking whether the point is valid GPS coordinates, if is is- do
+//		 the calculation
+//				if (isValid_GPS_Point(gps)
+//						&& (local_vector_in_meter.x() < diastanceLimit && local_vector_in_meter.y() < diastanceLimit)) {
+//					// converting the decimal degrees to radian
+//					double radianLat = Point3D.d2r(gps.x());
+//					double radianLon = Point3D.d2r(gps.y());
+//					// converting the radian to meter
+//					double meterLat = r2mLat(radianLat);
+//					double meterLon = r2mLon(radianLon, 1);
+//					// adding the meters from the vector to the one we got
+//					double gps1MeterLat = meterLat + local_vector_in_meter.x();
+//					double gps1MeterLon = meterLon + local_vector_in_meter.y();
+//					double gps1MeterAlt = gps.z() + local_vector_in_meter.z();
+//					// converting the meter back to radian
+//					double radianGps1Lat = m2rLat(gps1MeterLat);
+//					double radianGps1Lon = m2rLon(gps1MeterLon,1);
+//					// converting the radian back to decimal degrees
+//					double gps1Lat = Point3D.r2d(radianGps1Lat);
+//					double gps1Lon = Point3D.r2d(radianGps1Lon);
+//					Point3D output = new Point3D(gps1Lat, gps1Lon, gps1MeterAlt);
+//					// returning the GPS point of Point3d type
+//					if (isValid_GPS_Point(output)) {
+//						return output;
+//					}
+//					// checking whether the distance added is more than the maximum distance limit
+//					else if (local_vector_in_meter.x() > diastanceLimit || local_vector_in_meter.y() > diastanceLimit) {
+//						System.out.println("ERR: you are trying to add more than the distance limit 100KM");
+//						return gps;
+//					}
+//					// checking whether after the vector addition the point is still a valid GPS
+//					// coord
+//					else {
+//						System.out.println(
+//								"ERR: the sum of this vector with this given GPS coord is not a valid GPS coord, returning the input GPS coord");
+//						return gps;
+//					}
+//				}
+//				// if its not (a valid GPS coordinates) print a message and return the point
+//				// value as we got it
+//				else {
+//					System.out.println("first arg isnt a valid GPS coord, returning the input without changes");
+//					return gps;
+//				}
+		double lat=gps.x();
+		double lon=gps.y();
+		double dn=local_vector_in_meter.x();
+		double de=local_vector_in_meter.y();
+		double dLat = dn/earthRadius;
+		double dLon = de/(earthRadius*Math.cos(Math.PI*lat/180));
+
+	    //OffsetPosition, decimal degrees
+		double latO = lat + dLat * 180/Math.PI;
+		double lonO = lon + dLon * 180/Math.PI;
+		double alt=gps.z()+local_vector_in_meter.z();
+		Point3D gps1=new Point3D(latO,lonO,alt);
+		return gps1;
 	}
 
 	/**
@@ -97,7 +110,7 @@ public class MyCoords implements coords_converter {
 		if (isValid_GPS_Point(gps0) && isValid_GPS_Point(gps1)) {
 			Point3D meterDiffVector = new Point3D(vector3D(gps0, gps1));
 			double outPutMeterDistance = Math.sqrt(Math.pow(meterDiffVector.x(), 2) + Math.pow(meterDiffVector.y(), 2)
-					+ Math.pow(meterDiffVector.z(), 2));
+			+ Math.pow(meterDiffVector.z(), 2));
 			if (outPutMeterDistance >= diastanceLimit) {
 				System.out.println("the diastnce is too big, cannot calculate it, distance has to be less than 100KM");
 				return Double.NaN;

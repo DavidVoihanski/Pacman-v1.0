@@ -33,8 +33,21 @@ public class Point3D implements Geom_element, Serializable
 	///////////////////////////////////////////////////////////////////////////
 	////////////////////////////       methods        /////////////////////////
 	///////////////////////////////////////////////////////////////////////////
-
-	
+	public Point3D normVec() {
+		double norm=Math.sqrt(Math.pow(this._x, 2)+Math.pow(this._y, 2)+Math.pow(this._z, 2));
+		Point3D normalized=new Point3D(this);
+		normalized.multVec(1/norm);
+		return normalized;
+	}
+	/**
+	 * Mults this vector by x
+	 * @param x
+	 */
+	public void multVec(double x) {
+		this._x=this._x*x;
+		this._y=this._y*x;
+		this._z=this._z*x;
+	}
 	public double x() {return _x;}
 	public double y() {return _y;}
 	public double z() {return _z;}

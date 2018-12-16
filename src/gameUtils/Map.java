@@ -15,7 +15,7 @@ public class Map {
 	private GpsCoord bottomRightP;
 	private BufferedImage mapImage;
 	private double pixelMeterRatio;
-	private static final Point3D topLeftPixelCoord = new Point3D(11, 73, 0);
+	private static final Point3D topLeftPixelCoord = new Point3D(0, 58, 0);
 
 	// constructors://
 	// def constructor
