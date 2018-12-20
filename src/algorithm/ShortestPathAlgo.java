@@ -14,9 +14,9 @@ import gameUtils.Paired;
 import GIS.Path;
 
 public abstract class ShortestPathAlgo {
-	
+
 	private static ArrayList<Fruit>saveFruits=new ArrayList<Fruit>();
-	
+
 	public static ArrayList<Paired> findPaths(Game game) throws InvalidPropertiesFormatException {
 		ArrayList<Paired>pairs=findPairs(game);
 		Iterator<Paired>pairIt=pairs.iterator();
@@ -76,21 +76,26 @@ public abstract class ShortestPathAlgo {
 		Pacman closest=packmanIt.next();
 		if(!closest.isMoving()) 
 			smallestTime=currFruit.getLocation().distance3D(closest.getLocation())/closest.getSpeed();
-		else 
+		else {
 			smallestTime=currFruit.getLocation().distance3D(closest.getEndTargetLocation())/closest.getSpeed();
+			smallestTime=smallestTime+closest.getTimeToTravel();
+		}
 		while(packmanIt.hasNext()) {
 			Pacman tempPack=packmanIt.next();
 			double tempTime;
 			if(!tempPack.isMoving())
 				tempTime=currFruit.getLocation().distance3D(tempPack.getLocation())/tempPack.getSpeed();
-			else
+			else {
 				tempTime=currFruit.getLocation().distance3D(tempPack.getEndTargetLocation())/tempPack.getSpeed();
+				tempTime=tempTime+tempPack.getTimeToTravel();
+			}
 			if(tempTime<smallestTime) {
 				smallestTime=tempTime;
 				closest=tempPack;
 			}
 		}
 		Paired pairFound=new Paired(currFruit, closest, smallestTime);
+
 		return pairFound;
 	}
 
@@ -112,6 +117,12 @@ public abstract class ShortestPathAlgo {
 			}
 		}
 		game.getFruitCollection().remove(bestFruit);
+		if(bestPair.getPackman().getEndTargetLocation()==null) {
+			bestPair.getPackman().setEndTargetLocation(bestPair.getPackman().getLocation());
+		}
+		double timeToAdd=bestFruit.getLocation().distance3D(bestPair.getPackman().getEndTargetLocation())/bestPair.getPackman().getSpeed();
+		
+		bestPair.getPackman().setTimeToTravel(bestPair.getPackman().getTimeToTravel()+timeToAdd);
 		bestPair.getPackman().setEndTargetLocation(bestFruit.getLocation());
 		bestPair.getPackman().setMoving(true);
 		saveFruits.add(bestFruit);
