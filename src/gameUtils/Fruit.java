@@ -3,7 +3,11 @@ package gameUtils;
 import java.util.InvalidPropertiesFormatException;
 
 import Coords.GpsCoord;
-
+/**
+ * this class represents a fruit in the game 
+ * @author Evgeny & David
+ *
+ */
 public class Fruit {
 	// gps info
 	private GpsCoord gps;
@@ -12,6 +16,14 @@ public class Fruit {
 	private int y;
 	private double points;
 
+	/**
+	 * basic fruit constructor
+	 * 
+	 * @param gps    the gps location of the fruit
+	 * @param x      x value in pixels
+	 * @param y      y value in pixels
+	 * @param points the points value of this fruit
+	 */
 	public Fruit(GpsCoord gps, int x, int y, double points) {
 		this.gps = gps;
 		this.x = x;
@@ -19,6 +31,11 @@ public class Fruit {
 		this.points = points;
 	}
 
+	/**
+	 * copy constructor
+	 * 
+	 * @param current a fruit instance we would like to copy
+	 */
 	public Fruit(Fruit current) {
 		try {
 			this.gps = new GpsCoord(current.getLocation());
@@ -31,36 +48,35 @@ public class Fruit {
 		this.points = current.points;
 	}
 
+//getters
+	
+	
+	/**
+	 * 
+	 * @return gps location
+	 */
 	public GpsCoord getLocation() {
 		return gps;
 	}
-
-	public void setGps(GpsCoord gps) {
-		this.gps = gps;
-	}
-
+	/**
+	 * 
+	 * @return x pixel location
+	 */
 	public int getX() {
 		return x;
-	}
-
-	public void setX(int x) {
-		this.x = x;
-	}
-
+	}	
+	/**
+	 * 
+	 * @return y pixel location
+	 */
 	public int getY() {
 		return y;
 	}
-
-	public void setY(int y) {
-		this.y = y;
-	}
-
+	/**
+	 * 
+	 * @return points value
+	 */
 	public double getPoints() {
 		return points;
 	}
-
-	public void setPoints(double points) {
-		this.points = points;
-	}
-
 }

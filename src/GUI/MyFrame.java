@@ -93,12 +93,12 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 		}
 		for (int i = 0; i < this.thisGuisGame.getPackCollection().size(); i++) {
 			Pacman current = this.thisGuisGame.getPackCollection().get(i);
-			this.imagePanel.drawingPackman((int) (this.gameMap.gpsToPixel(current.getLocation()).y() - 10),
-					(int) (this.gameMap.gpsToPixel(current.getLocation()).x()) + 44, getGraphics());
+			this.imagePanel.drawingPackman((int) (this.gameMap.gps2Pixel(current.getLocation()).y() - 10),
+					(int) (this.gameMap.gps2Pixel(current.getLocation()).x()) + 44, getGraphics());
 		}
 		for (Fruit current : this.thisGuisGame.getFruitCollection()) {
 			GpsCoord gpsOfFruit = current.getLocation();
-			Point3D gps2pixel = this.gameMap.gpsToPixel(gpsOfFruit);
+			Point3D gps2pixel = this.gameMap.gps2Pixel(gpsOfFruit);
 			this.imagePanel.drawingFruit((int) gps2pixel.y() - 10, (int) gps2pixel.x() + 44, getGraphics());
 		}
 	}
@@ -117,7 +117,7 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 			this.imagePanel.drawingPackman(arg0.getX() - 10, arg0.getY() - 10, getGraphics());
 			Pacman current = null;
 			try {
-				current = new Pacman(new GpsCoord(this.gameMap.clickedToAddPoint()), arg0.getX() - 10, arg0.getY() - 10,
+				current = new Pacman(new GpsCoord(this.gameMap.pixel2Gps()), arg0.getX() - 10, arg0.getY() - 10,
 						1, 1);
 			} catch (InvalidPropertiesFormatException e) {
 				// TODO Auto-generated catch block
@@ -132,7 +132,7 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 			this.imagePanel.drawingFruit(arg0.getX() - 10, arg0.getY() - 10, getGraphics());
 			Fruit current = null;
 			try {
-				current = new Fruit(new GpsCoord(this.gameMap.clickedToAddPoint()), arg0.getX() - 10, arg0.getY() - 10,
+				current = new Fruit(new GpsCoord(this.gameMap.pixel2Gps()), arg0.getX() - 10, arg0.getY() - 10,
 						1);
 			} catch (InvalidPropertiesFormatException e) {
 				// TODO Auto-generated catch block
@@ -147,7 +147,7 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 		height = this.getHeight() - 79;
 		lastClicked = new Point3D(arg0.getX(), arg0.getY(), 0);
 		try {
-			System.out.println("***" + this.gameMap.clickedToAddPoint());
+			System.out.println("***" + this.gameMap.pixel2Gps());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -232,7 +232,7 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 		// adding the main menu to the menu bar
 		menuBar.add(mainMenu);
 		this.setJMenuBar(menuBar);
-		this.gameMap = MapFactory.defaultMapInit();
+		this.gameMap = new Map();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.gameChangingImage = this.gameMap.getImage();
 		this.imagePanel = new ImagePanel(this.gameChangingImage);
@@ -280,18 +280,17 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 	public void showGame(Game givenGame) {
 		for (int i = 0; i < this.thisGuisGame.getPackCollection().size(); i++) {
 			Pacman current = this.thisGuisGame.getPackCollection().get(i);
-			this.imagePanel.drawingPackman((int) (this.gameMap.gpsToPixel(current.getLocation()).y() - 10),
-					(int) (this.gameMap.gpsToPixel(current.getLocation()).x()) + 44, getGraphics());
+			this.imagePanel.drawingPackman((int) (this.gameMap.gps2Pixel(current.getLocation()).y() - 10),
+					(int) (this.gameMap.gps2Pixel(current.getLocation()).x()) + 44, getGraphics());
 		}
 		for (Fruit current : this.thisGuisGame.getFruitCollection()) {
 			GpsCoord gpsOfFruit = current.getLocation();
-			Point3D gps2pixel = this.gameMap.gpsToPixel(gpsOfFruit);
+			Point3D gps2pixel = this.gameMap.gps2Pixel(gpsOfFruit);
 			this.imagePanel.drawingFruit((int) gps2pixel.y() - 10, (int) gps2pixel.x() + 44, getGraphics());
 		}
 	}
 
 	public void start() throws InterruptedException {
-		Game backUp = this.thisGuisGame.cloneGame();
 		new Thread(new GuiWorker(thisGuisGame, this, imagePanel, gameMap)).start();
 	}
 
