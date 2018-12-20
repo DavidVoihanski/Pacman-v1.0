@@ -93,13 +93,21 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 		}
 		for (int i = 0; i < this.thisGuisGame.getPackCollection().size(); i++) {
 			Pacman current = this.thisGuisGame.getPackCollection().get(i);
+<<<<<<< HEAD
 			this.imagePanel.drawingPackman((int) (this.gameMap.gpsToPixel(current.getLocation()).y() - 10),
+=======
+			this.imagePanel.drawingPackman((int) (this.gameMap.gpsToPixel(current.getLocation()).y()-10),
+>>>>>>> de227fdb7519915e3b8f9734fdedbb63545b9438
 					(int) (this.gameMap.gpsToPixel(current.getLocation()).x()) + 44, getGraphics());
 		}
 		for (Fruit current : this.thisGuisGame.getFruitCollection()) {
 			GpsCoord gpsOfFruit = current.getLocation();
 			Point3D gps2pixel = this.gameMap.gpsToPixel(gpsOfFruit);
+<<<<<<< HEAD
 			this.imagePanel.drawingFruit((int) gps2pixel.y() - 10, (int) gps2pixel.x() + 44, getGraphics());
+=======
+			this.imagePanel.drawingFruit((int) gps2pixel.y()-10, (int) gps2pixel.x() + 44, getGraphics());
+>>>>>>> de227fdb7519915e3b8f9734fdedbb63545b9438
 		}
 	}
 
@@ -280,19 +288,38 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 	public void showGame(Game givenGame) {
 		for (int i = 0; i < this.thisGuisGame.getPackCollection().size(); i++) {
 			Pacman current = this.thisGuisGame.getPackCollection().get(i);
+<<<<<<< HEAD
 			this.imagePanel.drawingPackman((int) (this.gameMap.gpsToPixel(current.getLocation()).y() - 10),
+=======
+			this.imagePanel.drawingPackman((int) (this.gameMap.gpsToPixel(current.getLocation()).y()-10),
+>>>>>>> de227fdb7519915e3b8f9734fdedbb63545b9438
 					(int) (this.gameMap.gpsToPixel(current.getLocation()).x()) + 44, getGraphics());
 		}
 		for (Fruit current : this.thisGuisGame.getFruitCollection()) {
 			GpsCoord gpsOfFruit = current.getLocation();
 			Point3D gps2pixel = this.gameMap.gpsToPixel(gpsOfFruit);
+<<<<<<< HEAD
 			this.imagePanel.drawingFruit((int) gps2pixel.y() - 10, (int) gps2pixel.x() + 44, getGraphics());
+=======
+			this.imagePanel.drawingFruit((int) gps2pixel.y()-10, (int) gps2pixel.x() + 44, getGraphics());
+>>>>>>> de227fdb7519915e3b8f9734fdedbb63545b9438
 		}
 	}
 
 	public void start() throws InterruptedException {
+<<<<<<< HEAD
 		Game backUp = this.thisGuisGame.cloneGame();
 		new Thread(new GuiWorker(thisGuisGame, this, imagePanel, gameMap)).start();
+=======
+//		while (!this.thisGuisGame.getFruitCollection().isEmpty()) {
+//			this.thisGuisGame.move();
+//			repaint();
+//			Thread.sleep(50);
+//			this.showGame(thisGuisGame);
+//			Thread.sleep(40);
+//		}
+		new Thread(new GuiWorker(thisGuisGame,this,imagePanel,gameMap)).start();
+>>>>>>> de227fdb7519915e3b8f9734fdedbb63545b9438
 	}
 
 	// *******CSV converter*******

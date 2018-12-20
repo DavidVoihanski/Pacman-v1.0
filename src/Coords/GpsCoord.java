@@ -74,7 +74,7 @@ public class GpsCoord implements Geom_element {
 	}
 
 	/**
-	 * 
+	 * basic toString method
 	 */
 	@Override
 	public String toString() {
@@ -135,19 +135,31 @@ public class GpsCoord implements Geom_element {
 	}
 
 	// getters:
-
+/**
+ * 
+ * @return the point3D inside the GpsCoord
+ */
 	public Point3D getInternalPoint() {
 		return internalPoint;
 	}
-
+/**
+ * 
+ * @return lat value of the Gps coord
+ */
 	public double getLat() {
 		return this.internalPoint.x();
 	}
-
+/**
+ * 
+ * @return lon value of the Gps coord
+ */
 	public double getLon() {
 		return this.internalPoint.y();
 	}
-
+/**
+ * 
+ * @return alt value of the Gps coord
+ */
 	public double getAlt() {
 		return this.internalPoint.z();
 	}

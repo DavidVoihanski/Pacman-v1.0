@@ -14,50 +14,64 @@ import gameUtils.Game;
 import gameUtils.Map;
 import gameUtils.Pacman;
 
-public class Csv2Game {
-	// public method which we'll use "externally"
+/**
+ * this abstract class is used to convert CSV files to "games", meaning - this
+ * class "reads" the configuration CSV files and "build" a game out of it
+ * 
+ * @author Evgeny & David
+ *
+ */
+public abstract class Csv2Game {
+	/**
+	 * 
+	 * @param csvInputPath   the path to the CSV file which we want to "turn" into a
+	 *                       game
+	 * @param certainGameMap a map which the game we be "played" on
+	 * @return a game which is the interpretation of the CSV file
+	 */
 	public static Game convertCsv2Game(String csvInputPath, Map certainGameMap) {
-		ArrayList<String[]> readedCsv = csvReader(csvInputPath);
-		Game output = gameConverter(readedCsv, certainGameMap);
-		return output;
-
+		ArrayList<String[]> readedCsv = csvReader(csvInputPath);// read the file
+		Game output = gameConverter(readedCsv, certainGameMap);// configure a map to be the game based on the CSV file
+		return output;// return the game
 	}
 
-	// private supporting methods:
+	// *****************private methods*****************
+
+	// this method used to "turn" the read string CSV file to a game on a map
 	private static Game gameConverter(ArrayList<String[]> readedCsvFile, Map gameMap) {
 		Iterator<String[]> it = readedCsvFile.iterator();
 		Game outputGame = new Game(new ArrayList<Pacman>(), new ArrayList<Fruit>());
-		it.next();
+		it.next();// skipping first line of CSV file
 		while (it.hasNext()) {
-			String[] currentLine = it.next();
-			if (currentLine[0].equals("P")) {
+			String[] currentLine = it.next();// iterating through all CSV lines
+			if (currentLine[0].equals("P")) {// in case the line is "about" a pacman
 				GpsCoord pacmansGPS = null;
 				try {
 					pacmansGPS = new GpsCoord(Double.parseDouble(currentLine[2]), Double.parseDouble(currentLine[3]),
-							Double.parseDouble(currentLine[4]));
+							Double.parseDouble(currentLine[4]));// creating a Gps coord to "hold" its Gps coord values
 				} catch (NumberFormatException | InvalidPropertiesFormatException e) {
 					System.out.println("wrong GPS coord from CSV file");
 					e.printStackTrace();
 				}
 				Pacman newP = new Pacman(pacmansGPS, (int) gameMap.gpsToPixel(pacmansGPS).x(),
 						(int) gameMap.gpsToPixel(pacmansGPS).y(), (Double.parseDouble(currentLine[5])),
-						(Double.parseDouble(currentLine[6])));
-				outputGame.addPacman(newP);
-			} else {
+						(Double.parseDouble(currentLine[6])));//creating a new pacman
+				outputGame.addPacman(newP);//adding it to the game
+			} else {//in case the lin is "about" a fruit
 				GpsCoord fruitsGPS = null;
 				try {
 					fruitsGPS = new GpsCoord(Double.parseDouble(currentLine[2]), Double.parseDouble(currentLine[3]),
-							Double.parseDouble(currentLine[4]));
+							Double.parseDouble(currentLine[4]));// creating a Gps coord to "hold" its Gps coord values
 				} catch (NumberFormatException | InvalidPropertiesFormatException e) {
 					System.out.println("wrong GPS coord from CSV file");
 					e.printStackTrace();
 				}
 				Fruit newF = new Fruit(fruitsGPS, (int) gameMap.gpsToPixel(fruitsGPS).x(),
-						(int) gameMap.gpsToPixel(fruitsGPS).y(), Double.parseDouble(currentLine[5]));
-				outputGame.addFruit(newF);
+						(int) gameMap.gpsToPixel(fruitsGPS).y(), Double.parseDouble(currentLine[5]));//creating a new fruit
+				outputGame.addFruit(newF);//adding it to the game
 			}
 		}
-		return outputGame;
+		return outputGame;//returning the game ouput
 	}
 
 	// this method reads a CSV file from certain path
