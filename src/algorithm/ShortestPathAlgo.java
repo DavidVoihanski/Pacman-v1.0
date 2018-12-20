@@ -21,7 +21,6 @@ import GIS.Path;
 
 public abstract class ShortestPathAlgo {
 
-<<<<<<< HEAD
 	// this collection represents all the fruits on the screen (i.e in the game)
 	private static ArrayList<Fruit> saveFruits = new ArrayList<Fruit>();
 
@@ -36,10 +35,7 @@ public abstract class ShortestPathAlgo {
 	 *                                          one of the coords dosent represent
 	 *                                          real coord values
 	 */
-=======
-	private static ArrayList<Fruit>saveFruits=new ArrayList<Fruit>();
 
->>>>>>> de227fdb7519915e3b8f9734fdedbb63545b9438
 	public static ArrayList<Paired> findPaths(Game game) throws InvalidPropertiesFormatException {
 		ArrayList<Paired> pairs = findPairs(game);// using the private method "find pairs" to find all the pairs between
 													// pacman "robots" and fruits
@@ -55,7 +51,6 @@ public abstract class ShortestPathAlgo {
 			pack = pair.getPackman();
 			// indicating that the pacman starts moving
 			pack.setMoving(true);
-<<<<<<< HEAD
 			// now we'll create a meter vector which represents the meter diff between the
 			// pacman and the fruit, normalize it and multiply it by the speed of the pacman
 			Point3D vector = pack.getLocation().vector3D(fruit.getLocation().getInternalPoint());
@@ -64,26 +59,6 @@ public abstract class ShortestPathAlgo {
 			// now we'll use the private method createPath to create each path for this
 			// pacman robot
 			createAndAddPath(fruit, pack, pair, normalized);
-=======
-			Point3D vector=pack.getLocation().vector3D(fruit.getLocation().getInternalPoint());
-			Point3D normelized=vector.normVec();
-			normelized.multVec(pack.getSpeed());
-			Path pathToAdd=new Path();
-			while(fruit.getLocation().distance3D(pack.getLocation())>pack.getRange()) {
-				GpsCoord addToPath;
-				if(fruit.getLocation().distance3D(pack.getLocation())<pack.getSpeed()) 
-					addToPath=fruit.getLocation();
-				else {
-					Point3D temp=pack.getLocation().add(normelized);
-					addToPath= new GpsCoord(temp);
-					pathToAdd.addPointToPath(addToPath);
-				}
-				pack.setLocation(addToPath);
-			}
-			pathToAdd.setFruitAtTheEnd(fruit);
-			pair.setPathBetweenPackAndFruit(pathToAdd);
-			pack.addPath(pathToAdd);
->>>>>>> de227fdb7519915e3b8f9734fdedbb63545b9438
 		}
 		pairIt = pairs.iterator();
 		// returning all pacmans to their original location
@@ -143,7 +118,6 @@ public abstract class ShortestPathAlgo {
 	// distance
 	private static Paired FindClosestPackToFruit(Fruit currFruit, Game game) {
 		double smallestTime;
-<<<<<<< HEAD
 		Iterator<Pacman> packmanIt = game.getPackCollection().iterator();
 		// in case the game has no pacmans
 		if (!packmanIt.hasNext())
@@ -175,33 +149,6 @@ public abstract class ShortestPathAlgo {
 		}
 		// as we found we'll pair these two together and retrun it
 		Paired pairFound = new Paired(currFruit, closest, smallestTime);
-=======
-		Iterator<Pacman>packmanIt=game.getPackCollection().iterator();
-		if(!packmanIt.hasNext())return null;
-		Pacman closest=packmanIt.next();
-		if(!closest.isMoving()) 
-			smallestTime=currFruit.getLocation().distance3D(closest.getLocation())/closest.getSpeed();
-		else {
-			smallestTime=currFruit.getLocation().distance3D(closest.getEndTargetLocation())/closest.getSpeed();
-			smallestTime=smallestTime+closest.getTimeToTravel();
-		}
-		while(packmanIt.hasNext()) {
-			Pacman tempPack=packmanIt.next();
-			double tempTime;
-			if(!tempPack.isMoving())
-				tempTime=currFruit.getLocation().distance3D(tempPack.getLocation())/tempPack.getSpeed();
-			else {
-				tempTime=currFruit.getLocation().distance3D(tempPack.getEndTargetLocation())/tempPack.getSpeed();
-				tempTime=tempTime+tempPack.getTimeToTravel();
-			}
-			if(tempTime<smallestTime) {
-				smallestTime=tempTime;
-				closest=tempPack;
-			}
-		}
-		Paired pairFound=new Paired(currFruit, closest, smallestTime);
-
->>>>>>> de227fdb7519915e3b8f9734fdedbb63545b9438
 		return pairFound;
 	}
 
@@ -231,7 +178,6 @@ public abstract class ShortestPathAlgo {
 		}
 		// now removing the fruit we "ate"
 		game.getFruitCollection().remove(bestFruit);
-<<<<<<< HEAD
 		// in case there are no more fruits to eat
 		if (bestPair.getPackman().getEndTargetLocation() == null) {
 			bestPair.getPackman().setEndTargetLocation(bestPair.getPackman().getLocation());
@@ -241,14 +187,6 @@ public abstract class ShortestPathAlgo {
 				/ bestPair.getPackman().getSpeed();
 		// setting the time travel, end target location and the moving of the pacman 
 		bestPair.getPackman().setTimeToTravel(bestPair.getPackman().getTimeToTravel() + timeToAdd);
-=======
-		if(bestPair.getPackman().getEndTargetLocation()==null) {
-			bestPair.getPackman().setEndTargetLocation(bestPair.getPackman().getLocation());
-		}
-		double timeToAdd=bestFruit.getLocation().distance3D(bestPair.getPackman().getEndTargetLocation())/bestPair.getPackman().getSpeed();
-		
-		bestPair.getPackman().setTimeToTravel(bestPair.getPackman().getTimeToTravel()+timeToAdd);
->>>>>>> de227fdb7519915e3b8f9734fdedbb63545b9438
 		bestPair.getPackman().setEndTargetLocation(bestFruit.getLocation());
 		bestPair.getPackman().setMoving(true);
 		saveFruits.add(bestFruit);

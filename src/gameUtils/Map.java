@@ -3,14 +3,12 @@ package gameUtils;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 import javax.imageio.ImageIO;
 
 import Coords.GpsCoord;
 import GUI.MyFrame;
 import Geom.Point3D;
-import de.micromata.opengis.kml.v_2_2_0.Point;
 
 public class Map {
 	private GpsCoord topLeftP;
