@@ -9,11 +9,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Iterator;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -50,12 +52,15 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 	public static boolean isPackmanAdding;
 	public static boolean isFruitAdding;
 	private Game thisGuisGame;
+	public final JFileChooser fc = new JFileChooser("C:" + File.separator + "Users" + File.separator + "evgen"
+			+ File.separator + "eclipse-workspace" + File.separator + "Assignment3" + File.separator + "config");
+
 
 	public MyFrame() throws IOException {
 		initComponents();
 		this.addMouseListener(this);
 		this.addComponentListener(this);
-		this.thisGuisGame = new Game(new <Pacman>ArrayList(), new <Fruit>ArrayList());
+		this.thisGuisGame = new Game(new ArrayList<Pacman>(), new ArrayList<Fruit>());
 	}
 
 //*******component listener*******
@@ -85,12 +90,12 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 		for (int i = 0; i < this.thisGuisGame.getPackCollection().size(); i++) {
 			Pacman current = this.thisGuisGame.getPackCollection().get(i);
 			this.imagePanel.drawingPackman((int) (this.gameMap.gpsToPixel(current.getLocation()).y()),
-					(int) (this.gameMap.gpsToPixel(current.getLocation()).x())+54,getGraphics());
+					(int) (this.gameMap.gpsToPixel(current.getLocation()).x()) + 54, getGraphics());
 		}
 		for (Fruit current : this.thisGuisGame.getFruitCollection()) {
 			GpsCoord gpsOfFruit = current.getLocation();
 			Point3D gps2pixel = this.gameMap.gpsToPixel(gpsOfFruit);
-			this.imagePanel.drawingFruit((int) gps2pixel.y(), (int) gps2pixel.x()+54, getGraphics());
+			this.imagePanel.drawingFruit((int) gps2pixel.y(), (int) gps2pixel.x() + 54, getGraphics());
 		}
 	}
 
@@ -185,20 +190,20 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 		existingGame.addMenuListener(this);
 		this.loadCsv = new JMenuItem("load CSV file");
 		loadCsv.setMnemonic(KeyEvent.VK_R);
-		loadCsv.addActionListener(new MenuAction());
+		loadCsv.addActionListener(new MenuAction(this));
 		existingGame.add(loadCsv);
 		subMenuDefaultGame.add(existingGame);
 		this.newGame = new JMenu("build your own game");
 		newGame.setMnemonic(KeyEvent.VK_R);
-		this.packman = new JMenuItem("add packman");
+		this.packman = new JMenuItem("add pacman");
 		packman.setMnemonic(KeyEvent.VK_R);
-		packman.addActionListener(new MenuAction());
+		packman.addActionListener(new MenuAction(this));
 		this.fruit = new JMenuItem("add fruit");
 		fruit.setMnemonic(KeyEvent.VK_R);
-		fruit.addActionListener(new MenuAction());
+		fruit.addActionListener(new MenuAction(this));
 		this.saveAsCsv = new JMenuItem("save the game as CSV file");
 		saveAsCsv.setMnemonic(KeyEvent.VK_R);
-		saveAsCsv.addActionListener(new MenuAction());
+		saveAsCsv.addActionListener(new MenuAction(this));
 		newGame.add(packman);
 		newGame.add(fruit);
 		newGame.add(saveAsCsv);
@@ -207,10 +212,10 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 		// creating menu items
 		this.saveAsKml = new JMenuItem("save as KML");
 		saveAsKml.setMnemonic(KeyEvent.VK_R);
-		saveAsKml.addActionListener(new MenuAction());
+		saveAsKml.addActionListener(new MenuAction(this));
 		this.play = new JMenuItem("run movment simulation");
 		play.setMnemonic(KeyEvent.VK_R);
-		play.addActionListener(new MenuAction());
+		play.addActionListener(new MenuAction(this));
 		// adding last menu items to the main one
 		mainMenu.add(play);
 		mainMenu.add(saveAsKml);
@@ -227,6 +232,7 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 		height = this.getHeight() - 22;
 		width = this.getWidth() - 79;
 		isPackmanAdding = false;
+		isFruitAdding = false;
 	}
 
 // *******action listener*******
@@ -256,23 +262,26 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 			System.out.println("menu clicked");
 		}
 	}
+
 	public Game getGame() {
 		return this.thisGuisGame;
 	}
+
 	private void showGame(Game givenGame) {
 		for (int i = 0; i < this.thisGuisGame.getPackCollection().size(); i++) {
 			Pacman current = this.thisGuisGame.getPackCollection().get(i);
 			this.imagePanel.drawingPackman((int) (this.gameMap.gpsToPixel(current.getLocation()).y()),
-					(int) (this.gameMap.gpsToPixel(current.getLocation()).x())+54,getGraphics());
+					(int) (this.gameMap.gpsToPixel(current.getLocation()).x()) + 54, getGraphics());
 		}
 		for (Fruit current : this.thisGuisGame.getFruitCollection()) {
 			GpsCoord gpsOfFruit = current.getLocation();
 			Point3D gps2pixel = this.gameMap.gpsToPixel(gpsOfFruit);
-			this.imagePanel.drawingFruit((int) gps2pixel.y(), (int) gps2pixel.x()+54, getGraphics());
+			this.imagePanel.drawingFruit((int) gps2pixel.y(), (int) gps2pixel.x() + 54, getGraphics());
 		}
 	}
+
 	public void start() throws InterruptedException {
-		while(!this.thisGuisGame.getFruitCollection().isEmpty()) {
+		while (!this.thisGuisGame.getFruitCollection().isEmpty()) {
 			this.thisGuisGame.move();
 			repaint();
 			Thread.sleep(50);
