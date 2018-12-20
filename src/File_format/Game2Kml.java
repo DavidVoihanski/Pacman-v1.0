@@ -51,36 +51,43 @@ public abstract class Game2Kml {
 
 	// *****************private methods*****************
 
-//path related:
+//###### path related ######:
 
 //private method which uses the "pathCreator" method
 	private static void path2KML(Path givenPath, Folder fold, String startingTime, double pacmansPace) {
 		pathCreator(givenPath, fold, startingTime, pacmansPace);
 	}
 
-// the method which converts a path to a set of GPS coord in google earth
+// the method which converts a path to a set of GPS coord that google earth can receive (i.e place mark)
 	private static void pathCreator(Path givenPath, Folder fold, String startingTime, double pacmansPace) {
-		System.out.println(givenPath.getPoints().size() - 1);
-		for (int index = 0; index < givenPath.getPoints().size() - 1; index++) {
-			GpsCoord current = givenPath.getPoints().get(index);
-			Placemark placeMark = fold.createAndAddPlacemark();
+//going through all the GpsCoords in a given path
+		for (int index = 0; index < givenPath.getPoints().size(); index++) {
+			GpsCoord current = givenPath.getPoints().get(index);// building a Gps coord
+			Placemark placeMark = fold.createAndAddPlacemark();// adding another placemark in the KML paths folder
 			int deltaTime = (int) pacmansPace;
-			startingTime = getTimeWithDelta(startingTime, (int) deltaTime);
 			placeMark.createAndSetTimeSpan().withBegin(startingTime + "Z");
-			placeMark.createAndSetPoint().addToCoordinates(current.getLon(), current.getLat());
+			startingTime = getTimeWithDelta(startingTime, (int) deltaTime);// creating the time Span based on pacmans
+																			// haste
+			placeMark.createAndSetPoint().addToCoordinates(current.getLon(), current.getLat());// adding the gps coord
+																								// to the place mark
 		}
 	}
+
+	// adding a collection of paths to the KML file
 	private static void pathAdder(Iterator<Path> itPath, Folder folderPac, String startingTime, Fruit lastFruit) {
-		while (itPath.hasNext()) {
+		while (itPath.hasNext()) {//going through all the paths in a collection
+
 			Path current = itPath.next();
-			if (!(itPath.hasNext())) {
+			if (!(itPath.hasNext())) {//adding the fruit location as a last point - this way we'll know the fruit been disappear in the KML
 				current.addPointToPath(lastFruit.getLocation());
 			}
-			path2KML(current, folderPac, startingTime, current.getSpeed());
+			path2KML(current, folderPac, startingTime, current.getSpeed());//converting any of the paths to placemarks
 		}
 
 	}
 	
+	
+//this method combines paths that belong to the same pacman robot, this way we can be positive that 
 	private static ArrayList<Path> combineAllPaths(ArrayList<Pacman> input) {
 		ArrayList<Path> allCombinedPaths = new ArrayList<Path>();
 		Iterator<Pacman> pacmanIt = input.iterator();
@@ -102,14 +109,13 @@ public abstract class Game2Kml {
 		return allCombinedPaths;
 
 	}
+
 	static void kmlWriter(String path, Kml kml) {
 		String filePath = path + ".kml";
 		writeKml(kml, filePath);
 		System.out.println("done..");
 
 	}
-
-	
 
 	private static Fruit fruitAdder(String startingTime, Iterator<Paired> itPairs, Folder folder) {
 		String dynTimeForFruits = startingTime;
@@ -191,8 +197,6 @@ public abstract class Game2Kml {
 		}
 		return pacmans;
 	}
-
-
 
 	private static String getTimeWithDelta(String Time, int deltaTime) {
 		String temp[] = Time.split("T");
