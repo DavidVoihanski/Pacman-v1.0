@@ -1,10 +1,13 @@
 package gameUtils;
-
 import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
-import Coords.GpsCoord;
+import java.util.Iterator;
 
-public class Packman {
+import Coords.GpsCoord;
+import GIS.Path;
+import Geom.Point3D;
+
+public class Pacman {
 	//gps info
 	private GpsCoord location;
 	//pixel info
@@ -13,27 +16,38 @@ public class Packman {
 	private double speed;
 	private double range;
 	private boolean isMoving=false;
-	private GpsCoord targetLocation;
+	private GpsCoord currTargetLocation;
+	private GpsCoord endTargetLocation;
+	private GpsCoord originalLocation;
+	private GpsCoord nextStep;
+	private int indexForMove=1;
+	private Path currPath;
+	private double score=0;
+	private ArrayList<Fruit>eaten=new ArrayList<Fruit>();
+	private Fruit lastEaten;
+	private int indexForPaths=1;
+
 	private ArrayList<Path>paths;//paths this packman has to complete
 	private double timeToTravel;//The time it will take for this packman to complete 'paths'
-	
-	public Packman(Packman pack) {
+
+	public Pacman(Pacman pack) {
 		this.location=pack.getLocation();
 		this.x=pack.getX();
 		this.y=pack.getY();
 		this.range=pack.getRange();
 		this.isMoving=pack.isMoving;
-		this.targetLocation=pack.getLocation();
+		this.endTargetLocation=pack.getLocation();
 		this.paths=pack.getPaths();
 		this.timeToTravel=pack.getTimeToTravel();
 	}
-	public Packman(GpsCoord gps,int x,int y,double speed,double range) {
+	public Pacman(GpsCoord gps,int x,int y,double speed,double range) {
 		this.location=gps;
 		this.x=x;
 		this.y=y;
 		this.speed=speed;
 		this.range=range;
 		this.paths=new ArrayList<Path>();
+		this.originalLocation=gps;
 	}
 	//getters and setters **************
 	public double getTimeToTravel() {
@@ -83,12 +97,27 @@ public class Packman {
 		this.isMoving = isMoving;
 	}
 
-	public GpsCoord getTargetLocation() {
-		return targetLocation;
+	public GpsCoord getEndTargetLocation() {
+		return endTargetLocation;
 	}
 
-	public void setTargetLocation(GpsCoord targetLocation) {
-		this.targetLocation = targetLocation;
+	public void setEndTargetLocation(GpsCoord targetLocation) {
+		if(this.paths.size()==1)currTargetLocation=targetLocation;
+		this.endTargetLocation = targetLocation;
+	}
+
+	public GpsCoord getCurrTargetLocation() {
+		return currTargetLocation;
+	}
+	public void setCurrTargetLocation(GpsCoord currTargetLocation) {
+		this.currTargetLocation = currTargetLocation;
+	}
+
+	public GpsCoord getOriginalLocation() {
+		return originalLocation;
+	}
+	public void setOriginalLocation(GpsCoord originalLocation) {
+		this.originalLocation = originalLocation;
 	}
 	/**
 	 * Adds a path to this packman, also updates its timeToTravel and targetLocation
@@ -102,10 +131,43 @@ public class Packman {
 		GpsCoord last;
 		try {
 			last = new GpsCoord(points.get(points.size()-1));
-			this.targetLocation=last;
+			this.setEndTargetLocation(last);
 		} catch (InvalidPropertiesFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		if(this.paths.size()==1) {
+			this.nextStep=path.getPoints().get(0);
+			currPath=path;
+		}
+	}
+	
+	public Fruit getLastEaten() {
+		return lastEaten;
+	}
+	public void setLastEaten(Fruit lastEaten) {
+		this.lastEaten = lastEaten;
+	}
+	public boolean move() {
+		this.location=this.nextStep;
+		if(this.indexForMove<this.currPath.getPoints().size()) {
+			this.nextStep=currPath.getPoints().get(this.indexForMove);
+			this.indexForMove++;
+			return true;
+		}
+		else {
+			this.indexForMove=0;
+			this.score=this.score+this.currPath.getFruitAtTheEnd().getPoints();
+			this.eaten.add(this.currPath.getFruitAtTheEnd());
+			this.lastEaten=this.currPath.getFruitAtTheEnd();
+			if(indexForPaths<this.paths.size()) {
+				this.currPath=paths.get(this.indexForPaths);
+				this.indexForPaths++;
+			}
+			else {
+				this.isMoving=false;
+			}
+			return false;
 		}
 	}
 }

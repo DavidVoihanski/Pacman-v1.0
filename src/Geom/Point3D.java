@@ -119,22 +119,7 @@ public final static int DOWN = 6, UP = 7;
 	}
 
  
-    /** pointLineTest <br>
-	test the following location of a point regards a line segment - all in 2D projection.<br><br>
-   
-	ONSEGMENT:  �����a----+----b������                              <br> <br>
-
-	           +       +        +                              <br>
-	LEFT:	 �����a---------b������                              <br> <br>
-
-
-	RIGHT:	 �����a---------b������                              <br>
-    		   +      +        +                              <br> <br>
-
-	INFRONTOFA:  ��+��a---------b������                              <br>
-        BEHINDB:  �����a---------b����+�                              <br>
-	ERROR: a==b || a==null || b == null;                               <br>
-    */
+    
 
     public int pointLineTest(Point3D a, Point3D b) {
 

@@ -50,12 +50,12 @@ class MyCoordsTest {
 		}
 		// checking whether the output is "close enough" to the expected,
 		// we allow 1% deviation
-		if ((output.getLat() > expected.getLat() + (expected.getLat() * 0.01)
-				|| (output.getLat() < expected.getLat() - (expected.getLat() * 0.01))
-				|| (output.getLon() > expected.getLon() + (expected.getLon() * 0.01)
-						|| (output.getLon() < expected.getLon() - (expected.getLon() * 0.01))
-						|| ((output.getAlt() > expected.getAlt() + (expected.getAlt() * 0.01)
-								|| (output.getAlt() < expected.getAlt() - (expected.getAlt() * 0.01))))))) {
+		if ((output.getLat() > expected.getLat() + (expected.getLat() * 0.0001)
+				|| (output.getLat() < expected.getLat() - (expected.getLat() * 0.0001))
+				|| (output.getLon() > expected.getLon() + (expected.getLon() * 0.0001)
+						|| (output.getLon() < expected.getLon() - (expected.getLon() *0.0001))
+						|| ((output.getAlt() > expected.getAlt() + (expected.getAlt() * 0.0001)
+								|| (output.getAlt() < expected.getAlt() - (expected.getAlt() *0.0001))))))) {
 			fail("add method failed #1");
 		}
 		try {

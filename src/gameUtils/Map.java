@@ -3,26 +3,34 @@ package gameUtils;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 import javax.imageio.ImageIO;
 
 import Coords.GpsCoord;
-import GUI.MyFrame_2;
+import GUI.MyFrame;
 import Geom.Point3D;
+import de.micromata.opengis.kml.v_2_2_0.Point;
 
 public class Map {
 	private GpsCoord topLeftP;
 	private GpsCoord bottomRightP;
+	private GpsCoord bottomLeftP;
 	private BufferedImage mapImage;
-	private double pixelMeterRatio;
-	private static final Point3D topLeftPixelCoord = new Point3D(0, 58, 0);
+	private static final Point3D topLeftPixelCoord = new Point3D(0, 54, 0);
+	private double ratio;
+	private int originalHeigth;
+	private int originalWidth;
+	private double mapH;
+	private double mapW;
 
 	// constructors://
 	// def constructor
 	public Map() throws IOException {
 		this.topLeftP = new GpsCoord(32.10574, 35.20228, 0);
 		this.bottomRightP = new GpsCoord(32.10192, 35.21231, 0);
-		mapImage = ImageIO.read(new File("Ariel1.png"));
+		this.bottomLeftP = new GpsCoord(32.10194, 35.20236, 0);
+		initDefMap();
 	}
 
 	// custom constructor//
@@ -30,6 +38,7 @@ public class Map {
 		this.topLeftP = new GpsCoord(lat1, lon1, 0);
 		this.bottomRightP = new GpsCoord(lat2, lon2, 0);
 		this.mapImage = ImageIO.read(new File(imagePath));
+		calcRatio();
 	}
 
 	// getters//
@@ -42,31 +51,65 @@ public class Map {
 		mapImage = inputImage;
 	}
 
+ //public methods
 	public GpsCoord clickedToAddPoint() throws IOException {
-		GpsCoord wantedPoint = new GpsCoord(topLeftP.add(calcDiffMeterVector()));
-		return wantedPoint;
+		Point3D vectorMeter = calcDiffMeterVector();
+		return (new GpsCoord(this.topLeftP.add(vectorMeter)));
 	}
 
 	//// private function section///
+
 	private void calcRatio() {
-		int height = MyFrame_2.heigth;
-		int width = MyFrame_2.width;
+		double height = this.mapImage.getHeight();
+		double width = this.mapImage.getWidth();
 		double diagonal = Math.sqrt(Math.pow(height, 2) + Math.pow(width, 2));
 		double distance = this.topLeftP.distance2D(this.bottomRightP);
-		pixelMeterRatio = distance / diagonal;
+		this.ratio = (distance / diagonal);
+	}
+
+	private double calcDymHRatio() {
+		double dynHeight = MyFrame.height;
+		return this.mapH / dynHeight;
+	}
+
+	private double calcDymWRatio() {
+		double dynWidth = MyFrame.width;
+		return this.mapW / dynWidth;
+	}
+
+	private Point3D calcDynamicRatio() {
+		double dynHeight = MyFrame.height;
+		double dynWidth = MyFrame.width;
+		return new Point3D(dynHeight / originalHeigth, dynWidth / originalWidth, 0);
 	}
 
 	private Point3D calcDiffMeterVector() throws IOException {
-		calcRatio();
-		Point3D pointClicked = MyFrame_2.lastClicked;
-		double diffX = pointClicked.x() - topLeftPixelCoord.x();
-		double diffY = topLeftPixelCoord.y() - pointClicked.y();
-		Point3D meterVector = new Point3D(diffY * pixelMeterRatio, diffX * pixelMeterRatio, 0);
-		System.out.println(meterVector);
-		return meterVector;
-		}
+		Point3D dynamicRatio = calcDynamicRatio();
+		Point3D clicked = MyFrame.lastClicked;
+		Point3D vector = new Point3D((((-1)*(clicked.y() - topLeftPixelCoord.y())) * (ratio / dynamicRatio.x())),
+				(clicked.x() * (ratio / dynamicRatio.y())), 0);
+		return vector;
 	}
-	// private String splitStringForPath (String inputString) {
-	// String withOutSlash [] = inputString.split("/");
-	// }
 
+	public Point3D gpsToPixel(GpsCoord gps) {
+		Point3D temp = new Point3D(gps.getLat(), gps.getLon(), gps.getAlt());
+		Point3D vector = topLeftP.vector3D(temp);
+		double hRatio = calcDymHRatio();
+		double wRatio = calcDymWRatio();
+		double y = Math.ceil(vector.y() / wRatio);
+		double x = Math.ceil(-vector.x() / hRatio);
+		Point3D output = new Point3D(x, y, 0);
+		return output;
+
+	}
+
+	private void initDefMap() throws IOException {
+		mapH = topLeftP.distance2D(bottomLeftP);
+		mapW = bottomLeftP.distance2D(bottomRightP);
+		this.mapImage = ImageIO.read(new File("Ariel1.png"));
+		originalHeigth = this.mapImage.getHeight();
+		originalWidth = this.mapImage.getWidth();
+		calcRatio();
+	}
+
+}

@@ -17,7 +17,7 @@ public class Fruit {
 		this.points=points;
 	}
 	
-	public GpsCoord getGps() {
+	public GpsCoord getLocation() {
 		return gps;
 	}
 

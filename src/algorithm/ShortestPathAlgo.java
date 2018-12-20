@@ -4,37 +4,38 @@ import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Iterator;
 
-import com.sun.xml.bind.v2.runtime.reflect.Lister.Pack;
 
 import Coords.GpsCoord;
 import Geom.Point3D;
 import gameUtils.Fruit;
 import gameUtils.Game;
-import gameUtils.Packman;
+import gameUtils.Pacman;
 import gameUtils.Paired;
-import gameUtils.Path;
+import GIS.Path;
 
 public abstract class ShortestPathAlgo {
-
-	public static void findPaths(Game game) throws InvalidPropertiesFormatException {
+	
+	private static ArrayList<Fruit>saveFruits=new ArrayList<Fruit>();
+	
+	public static ArrayList<Paired> findPaths(Game game) throws InvalidPropertiesFormatException {
 		ArrayList<Paired>pairs=findPairs(game);
 		Iterator<Paired>pairIt=pairs.iterator();
 		Paired pair;
 		Fruit fruit;
-		Packman pack;
+		Pacman pack;
 		while(pairIt.hasNext()) {
 			pair=pairIt.next();
 			fruit=pair.getFruit();
 			pack=pair.getPackman();
-			GpsCoord saveStartingLocation=pack.getLocation();
-			Point3D vector=pack.getLocation().vector3D(fruit.getGps().getInternalPoint());
+			pack.setMoving(true);
+			Point3D vector=pack.getLocation().vector3D(fruit.getLocation().getInternalPoint());
 			Point3D normelized=vector.normVec();
 			normelized.multVec(pack.getSpeed());
 			Path pathToAdd=new Path();
-			while(fruit.getGps().distance3D(pack.getLocation())>pack.getRange()) {
+			while(fruit.getLocation().distance3D(pack.getLocation())>pack.getRange()) {
 				GpsCoord addToPath;
-				if(fruit.getGps().distance3D(pack.getLocation())<pack.getSpeed()) 
-					addToPath=fruit.getGps();
+				if(fruit.getLocation().distance3D(pack.getLocation())<pack.getSpeed()) 
+					addToPath=fruit.getLocation();
 				else {
 					Point3D temp=pack.getLocation().add(normelized);
 					addToPath= new GpsCoord(temp);
@@ -42,9 +43,20 @@ public abstract class ShortestPathAlgo {
 				}
 				pack.setLocation(addToPath);
 			}
-			pack.setLocation(saveStartingLocation);//returns to the starting location
+			pathToAdd.setFruitAtTheEnd(fruit);
+			//pack.setLocation(saveStartingLocation);//returns to the starting location
+			pair.setPathBetweenPackAndFruit(pathToAdd);
 			pack.addPath(pathToAdd);
 		}
+		pairIt=pairs.iterator();
+		//returns all pacmans to their original location
+		while(pairIt.hasNext()) {
+			Paired currPair=pairIt.next();
+			Pacman currPac=currPair.getPackman();
+			currPac.setLocation(currPac.getOriginalLocation());
+		}
+		game.setFruitCollection(saveFruits);
+		return pairs;
 	}
 
 	//private methods
@@ -60,20 +72,20 @@ public abstract class ShortestPathAlgo {
 	//finds closest packman to fruit
 	private static Paired FindClosestPackToFruit(Fruit currFruit,Game game) {
 		double smallestTime;
-		Iterator<Packman>packmanIt=game.getPackCollection().iterator();
+		Iterator<Pacman>packmanIt=game.getPackCollection().iterator();
 		if(!packmanIt.hasNext())return null;
-		Packman closest=packmanIt.next();
+		Pacman closest=packmanIt.next();
 		if(!closest.isMoving()) 
-			smallestTime=currFruit.getGps().distance3D(closest.getLocation())/closest.getSpeed();
+			smallestTime=currFruit.getLocation().distance3D(closest.getLocation())/closest.getSpeed();
 		else 
-			smallestTime=currFruit.getGps().distance3D(closest.getTargetLocation())/closest.getSpeed();
+			smallestTime=currFruit.getLocation().distance3D(closest.getEndTargetLocation())/closest.getSpeed();
 		while(packmanIt.hasNext()) {
-			Packman tempPack=packmanIt.next();
+			Pacman tempPack=packmanIt.next();
 			double tempTime;
 			if(!tempPack.isMoving())
-				tempTime=currFruit.getGps().distance3D(tempPack.getLocation())/tempPack.getSpeed();
+				tempTime=currFruit.getLocation().distance3D(tempPack.getLocation())/tempPack.getSpeed();
 			else
-				tempTime=currFruit.getGps().distance3D(tempPack.getTargetLocation())/tempPack.getSpeed();
+				tempTime=currFruit.getLocation().distance3D(tempPack.getEndTargetLocation())/tempPack.getSpeed();
 			if(tempTime<smallestTime) {
 				smallestTime=tempTime;
 				closest=tempPack;
@@ -101,6 +113,10 @@ public abstract class ShortestPathAlgo {
 			}
 		}
 		game.getFruitCollection().remove(bestFruit);
+		bestPair.getPackman().setEndTargetLocation(bestFruit.getLocation());
+		bestPair.getPackman().setMoving(true);
+		saveFruits.add(bestFruit);
+		//bestPair.getPackman().setMoving(true);
 		return bestPair;
 	}
 }
