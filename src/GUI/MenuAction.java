@@ -3,12 +3,15 @@ package GUI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.InvalidPropertiesFormatException;
 
 import javax.swing.JFileChooser;
 
-import File_format.Game2CSV;
+import algorithm.ShortestPathAlgo;
+import gameUtils.Game;
+import gameUtils.Paired;
 
 class MenuAction implements ActionListener {
 	private MyFrame guiInstance;
@@ -43,9 +46,25 @@ class MenuAction implements ActionListener {
 			/////////////
 		} else if (e.getActionCommand().equals("save the game as CSV file")) {
 			int retrival = guiInstance.fc.showSaveDialog(null);
-		    if (retrival == JFileChooser.APPROVE_OPTION) {
-		        guiInstance.saveGameAsCsv(guiInstance.fc.getSelectedFile().getPath());
-		    }
+			if (retrival == JFileChooser.APPROVE_OPTION) {
+				guiInstance.saveGameAsCsv(guiInstance.fc.getSelectedFile().getPath());
+			}
+		}
+		/////////////
+		else if (e.getActionCommand().equals("run movment simulation")) {
+			Game game = guiInstance.getGame();
+			try {
+				ArrayList<Paired> pairs = ShortestPathAlgo.findPaths(game);
+			} catch (InvalidPropertiesFormatException e1) {
+				System.out.println("ERR=> ShortestPathAlgo");
+				e1.printStackTrace();
+			}
+			try {
+				guiInstance.start();
+			} catch (InterruptedException e1) {
+				System.out.println("ERR=> guiInstance.start()");
+				e1.printStackTrace();
+			}
 		}
 	}
 }
