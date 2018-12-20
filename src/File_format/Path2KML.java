@@ -16,45 +16,70 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
 public class Path2KML {
 
-	public static void path2KML(Path givenPath, Kml kml, String startingTime) {
-		pathCreator(givenPath, kml, startingTime);
+	public static void path2KML(Path givenPath, Document doc, String startingTime, double pacmansPace) {
+		pathCreator(givenPath, doc, startingTime, pacmansPace);
 	}
 
-	private static void pathCreator(Path givenPath, Document doc, String startingTime) {
-		Iterator<GpsCoord> gpsIt = givenPath.getPoints().iterator();
-		while (gpsIt.hasNext()) {
-				GpsCoord current = gpsIt.next();
-				Placemark placeMark = doc.createAndAddPlacemark();
-				startingTime=getTimeWithDelta(startingTime,//{this_points_time-dlta}// );
-				placeMark.createAndSetTimeSpan().withBegin(startingTime);
-				placeMark.createAndSetPoint().addToCoordinates(current.getLat(), current.getLon());
-			}
+	private static void pathCreator(Path givenPath, Document doc, String startingTime, double pacmansPace) {
+		for (int index = 0; index < givenPath.getPoints().size() - 1; index++) {
+			GpsCoord current = givenPath.getPoints().get(index);
+			Placemark placeMark = doc.createAndAddPlacemark();
+			int deltaTime = (int) pacmansPace;
+			startingTime = getTimeWithDelta(startingTime, (int) deltaTime);
+			placeMark.createAndSetTimeSpan().withBegin(startingTime + "Z");
+			placeMark.createAndSetPoint().addToCoordinates(current.getLon(), current.getLat());
 		}
+	}
 
-	private String getTimeWithDelta(String Time, int deltaTime) {
-		String temp[] = Time.split(":");
-		String updatedTime = "" + (Integer.parseInt(temp[2]) + deltaTime);
+	private static String getTimeWithDelta(String Time, int deltaTime) {
+		String temp[] = Time.split("T");
+		String temp_time[] = temp[1].split(":");
+		String updatedTime = "" + (Integer.parseInt(temp_time[2]) + deltaTime);
 		String output = "";
 		if (Integer.parseInt(updatedTime) < 60) {
-			output = temp[0] + ":" + temp[1] + ":" + updatedTime;
+			output = temp_time[0] + ":" + temp_time[1] + ":" + updatedTime;
 		} else {
 			String newSec = "" + (Integer.parseInt(updatedTime) - 60);
-			if ((Integer.parseInt(temp[1]) + ((int) Integer.parseInt(updatedTime) / 60)) < 60) {
-				temp[1] = "" + ((Integer.parseInt(temp[1]) + ((int) Integer.parseInt(updatedTime) / 60)));
-				output = temp[0] + ":" + temp[1] + ":" + newSec;
+			if ((Integer.parseInt(temp_time[1]) + ((int) Integer.parseInt(updatedTime) / 60)) < 60) {
+				temp_time[1] = "" + ((Integer.parseInt(temp_time[1]) + ((int) Integer.parseInt(updatedTime) / 60)));
+				output = temp_time[0] + ":" + temp_time[1] + ":" + newSec;
 			} else {
-				if ((Integer.parseInt(temp[0]) + 1) < 24) {
-					String newHour = "" + (Integer.parseInt(temp[0]) + 1);
-					temp[1] = "00";
-					output = newHour + ":" + temp[1] + ":" + newSec;
-				}
-				else {
+				if ((Integer.parseInt(temp_time[0]) + 1) < 24) {
+					String newHour = "" + (Integer.parseInt(temp_time[0]) + 1);
+					temp_time[1] = "00";
+					output = newHour + ":" + temp_time[1] + ":" + newSec;
+				} else {
 					String newHour = "00";
-					temp[1] = "00";
-					output = newHour + ":" + temp[1] + ":" + newSec;
+					temp_time[1] = "00";
+					output = newHour + ":" + temp_time[1] + ":" + newSec;
 				}
 			}
 		}
-		return output;
+		output = checkOutput(output);
+		return (temp[0] + "T" + output);
+	}
+
+	private static String checkOutput(String input) {
+		String splited[] = input.split(":");
+		String output = "";
+		for (int index = 0; index < splited.length; index++) {
+			if(Integer.parseInt(splited[index])<10) {
+				if(index==0) {
+					output+="0"+splited[index];
+				}
+				else {
+					output+=":0"+splited[index];
+				}
+			}
+			else {
+				if(index==0) {
+					output+=splited[index];
+				}
+				else {
+					output+=":"+splited[index];
+				}
+			}
+		}
+		return output; 
 	}
 }

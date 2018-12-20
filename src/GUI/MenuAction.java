@@ -9,6 +9,7 @@ import java.util.InvalidPropertiesFormatException;
 
 import javax.swing.JFileChooser;
 
+import File_format.Game2Kml;
 import algorithm.ShortestPathAlgo;
 import gameUtils.Game;
 import gameUtils.Paired;
@@ -65,6 +66,19 @@ class MenuAction implements ActionListener {
 				System.out.println("ERR=> guiInstance.start()");
 				e1.printStackTrace();
 			}
+		}
+		/////////////
+		else if (e.getActionCommand().equals("save as KML")) {
+			System.out.println("saving as KML");
+			Game game = guiInstance.getGame();
+			ArrayList<Paired> pairs =null;
+			try {
+				pairs = ShortestPathAlgo.findPaths(game);
+			} catch (InvalidPropertiesFormatException e1) {
+				System.out.println("ERR=> ShortestPathAlgo");
+				e1.printStackTrace();
+			}
+			Game2Kml.game2Kml(pairs);
 		}
 	}
 }

@@ -1,9 +1,13 @@
 package File_format;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+
+import javax.swing.JFileChooser;
 
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
@@ -14,17 +18,27 @@ import gameUtils.Pacman;
 import gameUtils.Paired;
 
 public class Game2Kml {
-	public static void game2Kml (//an object yet built//ArrayList<Solutions> solutionOfGame) {
+	public static void game2Kml(ArrayList<Paired> pairs) {
 		Kml kml = new Kml();
 		Document doc = kml.createAndSetDocument();
 		String startingTime = getCurrentDateTime();
+		Iterator<Paired> pairsdIt = pairs.iterator();
+		while (pairsdIt.hasNext()) {
+			Paired currentPair = pairsdIt.next();
+			Path2KML.path2KML(currentPair.getPathBetweenPackAndFruit(), doc, startingTime,
+					currentPair.getPackman().getSpeed());
+		}
+		String filePath = "C:" + File.separator + "Users" + File.separator + "evgen"
+				+ File.separator + "eclipse-workspace" + File.separator + "Assignment3" + File.separator + "config"+File.separator+"testKML.kml";
+		writeKml(kml, filePath);
+		System.out.println("done..");
 		// here i will use a method to return all paths, then iterate over them all with
 		// iterator and send any of them here->
-		Path2KML.path2KML(givenPath, doc, startingTime);
-       //lets assume that we created all paths in this kml file
-		//now creating the fruits
-		//assuming i know which fruits which pacman ate, sending them here:
-		
+
+		// lets assume that we created all paths in this kml file
+		// now creating the fruits
+		// assuming i know which fruits which pacman ate, sending them here:
+
 	}
 
 	private static void createFruitKml(ArrayList<Fruit> flist, Document doc, Pacman whoAte, String whenCreated) {
@@ -67,12 +81,22 @@ public class Game2Kml {
 	private static String getCurrentDateTime() {
 		Calendar now = Calendar.getInstance();
 		String year = "" + now.get(Calendar.YEAR);
-		String month = "" + now.get(Calendar.MONTH) + 1; // Note: zero based!
+		String month = "" + (now.get(Calendar.MONTH)+1); // Note: zero based!
 		String day = "" + now.get(Calendar.DAY_OF_MONTH);
 		String hour = "" + now.get(Calendar.HOUR_OF_DAY);
 		String minute = "" + now.get(Calendar.MINUTE);
 		String second = "" + now.get(Calendar.SECOND);
 		String returnedTime = year + "-" + month + "-" + day + "T" + hour + ":" + minute + ":" + second;
 		return returnedTime;
+	}
+
+	private static void writeKml(Kml kml, String filePath) {
+		try {
+			kml.marshal(new File(filePath));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("ERR in KML MARSHAL");
+			return;
+		}
 	}
 }
