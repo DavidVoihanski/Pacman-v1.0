@@ -44,7 +44,6 @@ public abstract class ShortestPathAlgo {
 				pack.setLocation(addToPath);
 			}
 			pathToAdd.setFruitAtTheEnd(fruit);
-			//pack.setLocation(saveStartingLocation);//returns to the starting location
 			pair.setPathBetweenPackAndFruit(pathToAdd);
 			pack.addPath(pathToAdd);
 		}

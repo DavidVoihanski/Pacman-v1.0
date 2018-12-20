@@ -90,13 +90,13 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 		}
 		for (int i = 0; i < this.thisGuisGame.getPackCollection().size(); i++) {
 			Pacman current = this.thisGuisGame.getPackCollection().get(i);
-			this.imagePanel.drawingPackman((int) (this.gameMap.gpsToPixel(current.getLocation()).y()),
-					(int) (this.gameMap.gpsToPixel(current.getLocation()).x()) + 54, getGraphics());
+			this.imagePanel.drawingPackman((int) (this.gameMap.gpsToPixel(current.getLocation()).y()-10),
+					(int) (this.gameMap.gpsToPixel(current.getLocation()).x()) + 44, getGraphics());
 		}
 		for (Fruit current : this.thisGuisGame.getFruitCollection()) {
 			GpsCoord gpsOfFruit = current.getLocation();
 			Point3D gps2pixel = this.gameMap.gpsToPixel(gpsOfFruit);
-			this.imagePanel.drawingFruit((int) gps2pixel.y(), (int) gps2pixel.x() + 54, getGraphics());
+			this.imagePanel.drawingFruit((int) gps2pixel.y()-10, (int) gps2pixel.x() + 44, getGraphics());
 		}
 	}
 
@@ -271,13 +271,13 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 	private void showGame(Game givenGame) {
 		for (int i = 0; i < this.thisGuisGame.getPackCollection().size(); i++) {
 			Pacman current = this.thisGuisGame.getPackCollection().get(i);
-			this.imagePanel.drawingPackman((int) (this.gameMap.gpsToPixel(current.getLocation()).y()),
-					(int) (this.gameMap.gpsToPixel(current.getLocation()).x()) + 54, getGraphics());
+			this.imagePanel.drawingPackman((int) (this.gameMap.gpsToPixel(current.getLocation()).y()-10),
+					(int) (this.gameMap.gpsToPixel(current.getLocation()).x()) + 44, getGraphics());
 		}
 		for (Fruit current : this.thisGuisGame.getFruitCollection()) {
 			GpsCoord gpsOfFruit = current.getLocation();
 			Point3D gps2pixel = this.gameMap.gpsToPixel(gpsOfFruit);
-			this.imagePanel.drawingFruit((int) gps2pixel.y(), (int) gps2pixel.x() + 54, getGraphics());
+			this.imagePanel.drawingFruit((int) gps2pixel.y()-10, (int) gps2pixel.x() + 44, getGraphics());
 		}
 	}
 
