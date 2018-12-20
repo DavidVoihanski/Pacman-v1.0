@@ -17,21 +17,7 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
 public class Path2KML {
 
-	public static void path2KML(Path givenPath, Folder fold, String startingTime, double pacmansPace) {
-		pathCreator(givenPath, fold, startingTime, pacmansPace);
-	}
 
-	private static void pathCreator(Path givenPath,Folder fold, String startingTime, double pacmansPace) {
-		System.out.println(givenPath.getPoints().size() - 1);
-		for (int index = 0; index < givenPath.getPoints().size() - 1; index++) {
-			GpsCoord current = givenPath.getPoints().get(index);
-			Placemark placeMark = fold.createAndAddPlacemark();
-			int deltaTime = (int) pacmansPace;
-			startingTime = getTimeWithDelta(startingTime, (int) deltaTime);
-			placeMark.createAndSetTimeSpan().withBegin(startingTime + "Z");
-			placeMark.createAndSetPoint().addToCoordinates(current.getLon(), current.getLat());
-		}
-	}
 
 	private static String getTimeWithDelta(String Time, int deltaTime) {
 		String temp[] = Time.split("T");

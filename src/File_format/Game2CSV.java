@@ -8,40 +8,51 @@ import gameUtils.Fruit;
 import gameUtils.Game;
 import gameUtils.Pacman;
 
-public class Game2CSV {
+/**
+ * this abstract class is used to save games as CSV files
+ * 
+ * @author Evgeny & David
+ *
+ */
+public abstract class Game2CSV {
+	/**
+	 * 
+	 * @param path        string path to the file you wish to be created
+	 * @param certainGame the game you wish to "write" as a CSV file
+	 */
 	public static void game2CSV(String path, Game certainGame) {
-		StringBuilder sb = writeCsvString(certainGame);
+		StringBuilder sb = writeCsvString(certainGame);// creating a string with all the needed data
 		FileWriter fw = null;
 		try {
-			fw = new FileWriter(path + ".csv");
+			fw = new FileWriter(path + ".csv");//creating the file 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			System.out.println("problem with writing the CSV file");
 			e.printStackTrace();
 		}
 		try {
-			fw.write(sb.toString());
+			fw.write(sb.toString());//writing the previously created string into it
 		} catch (IOException e) {
 			System.out.println("problem with writing the CSV file");
 			e.printStackTrace();
 		}
+		//"cleaning" the stream
 		try {
 			fw.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
 			fw.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("done");
 	}
 
+//private method used to write a game as a configuration CSV file
 	private static StringBuilder writeCsvString(Game certainGame) {
 		StringBuilder sb = new StringBuilder();
+		// first line settings
 		sb.append("Type");
 		sb.append(',');
 		sb.append("id");
@@ -56,7 +67,7 @@ public class Game2CSV {
 		sb.append(',');
 		sb.append("Radius");
 		sb.append('\n');
-
+//adding all pacman robots
 		Iterator<Pacman> PacmanIt = certainGame.getPackCollection().iterator();
 		while (PacmanIt.hasNext()) {
 			Pacman current = PacmanIt.next();
@@ -75,6 +86,7 @@ public class Game2CSV {
 			sb.append("" + current.getRange());
 			sb.append('\n');
 		}
+//adding all fruits
 		Iterator<Fruit> FruitIt = certainGame.getFruitCollection().iterator();
 		while (FruitIt.hasNext()) {
 			Fruit current = FruitIt.next();

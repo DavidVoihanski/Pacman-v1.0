@@ -7,8 +7,7 @@ public class EntryPoint
 {
 	public static void main(String[] args) throws IOException
 	{
-		MyFrame frame=new MyFrame();
-		
+		MyFrame frame=new MyFrame();		
 		
 	}
 }

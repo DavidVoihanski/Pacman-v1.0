@@ -1,43 +1,119 @@
 package File_format;
 
-import java.awt.Color;
-import java.awt.geom.PathIterator;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Iterator;
-
-import javax.sound.midi.Synthesizer;
-import javax.swing.JFileChooser;
 
 import Coords.GpsCoord;
 import GIS.Path;
-import de.micromata.opengis.kml.v_2_2_0.BalloonStyle;
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
-import de.micromata.opengis.kml.v_2_2_0.Icon;
-import de.micromata.opengis.kml.v_2_2_0.IconStyle;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
-import de.micromata.opengis.kml.v_2_2_0.Style;
 import de.micromata.opengis.kml.v_2_2_0.TimeSpan;
 import gameUtils.Fruit;
-import gameUtils.Game;
 import gameUtils.Pacman;
 import gameUtils.Paired;
 
-public class Game2Kml {
-	public static void game2Kml(ArrayList<Paired> pairs,String path) {
-		boolean isFirst = true;
+/**
+ * this class is an abstract class which used to convert a game to a KML file
+ * which can be presented in google earth
+ * 
+ * @author Evgeny & David
+ *
+ */
+public abstract class Game2Kml {
+	/**
+	 * this is the public "external - use" method which called with "solved" game
+	 * and creates a KML file
+	 * 
+	 * @param pairs collection of all the pairs the algorithm returned
+	 * @param path  the string path to the KML file
+	 */
+	public static void game2Kml(ArrayList<Paired> pairs, String path) {
+		// creating and setting all the KML - jar library features
 		Kml kml = new Kml();
 		Document doc = kml.createAndSetDocument();
-		String startingTime = getCurrentDateTime();
-		ArrayList<Pacman> allPacmanColl = getPacmanList(pairs);
-		Iterator<Paired> itPairs = pairs.iterator();
 		Folder folder = doc.createAndAddFolder().withName("Fruits");
+		Folder folderPac = doc.createAndAddFolder().withName("Pacman");
+		String startingTime = getCurrentDateTime();// setting the current time for the time stamp/span in the KML file
+		ArrayList<Pacman> allPacmanColl = getPacmanList(pairs);// getting all the pacmans of the game
+		Iterator<Paired> itPairs = pairs.iterator();
+		Fruit lastFruit = fruitAdder(startingTime, itPairs, folder);// adding all the fruits to the KML file
+		ArrayList<Path> allPaths = combineAllPaths(allPacmanColl);// combining the paths of the same pacman if there are
+																	// some
+		Iterator<Path> itPath = allPaths.iterator();
+		pathAdder(itPath, folderPac, startingTime, lastFruit);// adding all the paths to the KML
+		kmlWriter(path, kml);// creating the KML
+	}
+
+	// *****************private methods*****************
+
+//path related:
+
+//private method which uses the "pathCreator" method
+	private static void path2KML(Path givenPath, Folder fold, String startingTime, double pacmansPace) {
+		pathCreator(givenPath, fold, startingTime, pacmansPace);
+	}
+
+// the method which converts a path to a set of GPS coord in google earth
+	private static void pathCreator(Path givenPath, Folder fold, String startingTime, double pacmansPace) {
+		System.out.println(givenPath.getPoints().size() - 1);
+		for (int index = 0; index < givenPath.getPoints().size() - 1; index++) {
+			GpsCoord current = givenPath.getPoints().get(index);
+			Placemark placeMark = fold.createAndAddPlacemark();
+			int deltaTime = (int) pacmansPace;
+			startingTime = getTimeWithDelta(startingTime, (int) deltaTime);
+			placeMark.createAndSetTimeSpan().withBegin(startingTime + "Z");
+			placeMark.createAndSetPoint().addToCoordinates(current.getLon(), current.getLat());
+		}
+	}
+	private static void pathAdder(Iterator<Path> itPath, Folder folderPac, String startingTime, Fruit lastFruit) {
+		while (itPath.hasNext()) {
+			Path current = itPath.next();
+			if (!(itPath.hasNext())) {
+				current.addPointToPath(lastFruit.getLocation());
+			}
+			path2KML(current, folderPac, startingTime, current.getSpeed());
+		}
+
+	}
+	
+	private static ArrayList<Path> combineAllPaths(ArrayList<Pacman> input) {
+		ArrayList<Path> allCombinedPaths = new ArrayList<Path>();
+		Iterator<Pacman> pacmanIt = input.iterator();
+		Path combinedPaths = new Path();
+		while (pacmanIt.hasNext()) {
+			combinedPaths = new Path();
+			Pacman currentPac = pacmanIt.next();
+			if (currentPac.getPaths().size() == 1) {
+				combinedPaths = currentPac.getPaths().get(0);
+			} else if (currentPac.getPaths().size() != 1) {
+				combinedPaths.setSpeed((int) currentPac.getSpeed());
+				for (int index = 0; index < currentPac.getPaths().size() - 1; index++) {
+					combinedPaths = Path.combinePath(combinedPaths, currentPac.getPaths().get(index));
+
+				}
+			}
+			allCombinedPaths.add(combinedPaths);
+		}
+		return allCombinedPaths;
+
+	}
+	static void kmlWriter(String path, Kml kml) {
+		String filePath = path + ".kml";
+		writeKml(kml, filePath);
+		System.out.println("done..");
+
+	}
+
+	
+
+	private static Fruit fruitAdder(String startingTime, Iterator<Paired> itPairs, Folder folder) {
 		String dynTimeForFruits = startingTime;
+		boolean isFirst = true;
 		int pervDeltaTime = 0;
 		Fruit lastFruit = null;
 		while (itPairs.hasNext()) {
@@ -70,26 +146,8 @@ public class Game2Kml {
 				}
 			}
 		}
-		ArrayList<Path> allPaths = combineAllPaths(allPacmanColl);
-		Iterator<Path> itPath = allPaths.iterator();
-		Folder folderPac = doc.createAndAddFolder().withName("Pacman");
-		while (itPath.hasNext()) {
-			Path current = itPath.next();
-			if (!(itPath.hasNext())) {
-				current.addPointToPath(lastFruit.getLocation());
-			}
-			Path2KML.path2KML(current, folderPac, startingTime, current.getSpeed());
-		}
-		String filePath = path +".kml";
-		writeKml(kml, filePath);
-		System.out.println("done..");
+		return lastFruit;
 	}
-	// here i will use a method to return all paths, then iterate over them all with
-	// iterator and send any of them here->
-
-	// lets assume that we created all paths in this kml file
-	// now creating the fruits
-	// assuming i know which fruits which pacman ate, sending them here:
 
 	private static void Fruit2Kml(String startingTime, int deltaTime, Fruit current, Folder folder) {
 		String eatenTime = getTimeWithDelta(startingTime, deltaTime);
@@ -101,7 +159,6 @@ public class Game2Kml {
 		GpsCoord fruitsGPS = current.getLocation();
 		placeMark.createAndSetPoint().addToCoordinates(fruitsGPS.getLon(), fruitsGPS.getLat());
 	}
-
 
 	private static String getCurrentDateTime() {
 		Calendar now = Calendar.getInstance();
@@ -135,27 +192,7 @@ public class Game2Kml {
 		return pacmans;
 	}
 
-	private static ArrayList<Path> combineAllPaths(ArrayList<Pacman> input) {
-		ArrayList<Path> allCombinedPaths = new ArrayList<Path>();
-		Iterator<Pacman> pacmanIt = input.iterator();
-		Path combinedPaths = new Path();
-		while (pacmanIt.hasNext()) {
-			combinedPaths = new Path();
-			Pacman currentPac = pacmanIt.next();
-			if (currentPac.getPaths().size() == 1) {
-				combinedPaths = currentPac.getPaths().get(0);
-			} else if (currentPac.getPaths().size() != 1) {
-				combinedPaths.setSpeed((int) currentPac.getSpeed());
-				for (int index = 0; index < currentPac.getPaths().size() - 1; index++) {
-					combinedPaths = Path.combinePath(combinedPaths, currentPac.getPaths().get(index));
 
-				}
-			}
-			allCombinedPaths.add(combinedPaths);
-		}
-		return allCombinedPaths;
-
-	}
 
 	private static String getTimeWithDelta(String Time, int deltaTime) {
 		String temp[] = Time.split("T");
@@ -210,4 +247,5 @@ public class Game2Kml {
 		}
 		return output;
 	}
+
 }
