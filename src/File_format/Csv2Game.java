@@ -26,7 +26,7 @@ public class Csv2Game {
 	// private supporting methods:
 	private static Game gameConverter(ArrayList<String[]> readedCsvFile, Map gameMap) {
 		Iterator<String[]> it = readedCsvFile.iterator();
-		Game outputGame = new Game(new <Pacman>ArrayList(), new <Fruit>ArrayList());
+		Game outputGame = new Game(new ArrayList<Pacman>(), new ArrayList<Fruit>());
 		it.next();
 		while (it.hasNext()) {
 			String[] currentLine = it.next();

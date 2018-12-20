@@ -11,19 +11,21 @@ import java.util.Iterator;
 import Coords.GpsCoord;
 import GIS.Path;
 import de.micromata.opengis.kml.v_2_2_0.Document;
+import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
 public class Path2KML {
 
-	public static void path2KML(Path givenPath, Document doc, String startingTime, double pacmansPace) {
-		pathCreator(givenPath, doc, startingTime, pacmansPace);
+	public static void path2KML(Path givenPath, Folder fold, String startingTime, double pacmansPace) {
+		pathCreator(givenPath, fold, startingTime, pacmansPace);
 	}
 
-	private static void pathCreator(Path givenPath, Document doc, String startingTime, double pacmansPace) {
+	private static void pathCreator(Path givenPath,Folder fold, String startingTime, double pacmansPace) {
+		System.out.println(givenPath.getPoints().size() - 1);
 		for (int index = 0; index < givenPath.getPoints().size() - 1; index++) {
 			GpsCoord current = givenPath.getPoints().get(index);
-			Placemark placeMark = doc.createAndAddPlacemark();
+			Placemark placeMark = fold.createAndAddPlacemark();
 			int deltaTime = (int) pacmansPace;
 			startingTime = getTimeWithDelta(startingTime, (int) deltaTime);
 			placeMark.createAndSetTimeSpan().withBegin(startingTime + "Z");

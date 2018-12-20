@@ -28,7 +28,7 @@ public class Pacman {
 	private int indexForPaths=1;
 
 	private ArrayList<Path>paths;//paths this packman has to complete
-	private double timeToTravel;//The time it will take for this packman to complete 'paths'
+	private double timeToTravel=0;//The time it will take for this packman to complete 'paths'
 
 	public Pacman(Pacman pack) {
 		this.location=pack.getLocation();
@@ -119,6 +119,10 @@ public class Pacman {
 	public void setOriginalLocation(GpsCoord originalLocation) {
 		this.originalLocation = originalLocation;
 	}
+
+	public void setTimeToTravel(double timeToTravel) {
+		this.timeToTravel = timeToTravel;
+	}
 	/**
 	 * Adds a path to this packman, also updates its timeToTravel and targetLocation
 	 * @param path The path to be added
@@ -126,22 +130,24 @@ public class Pacman {
 	public void addPath(Path path) {
 		this.paths.add(path);
 		ArrayList<GpsCoord>points=path.getPoints();
-		double timeToAdd=path.getPathLenght()/this.speed;
-		timeToTravel=timeToTravel+timeToAdd;
 		GpsCoord last;
-		try {
-			last = new GpsCoord(points.get(points.size()-1));
-			this.setEndTargetLocation(last);
-		} catch (InvalidPropertiesFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(!points.isEmpty()) {
+			try {
+				last = new GpsCoord(points.get(points.size()-1));
+				this.setEndTargetLocation(last);
+			} catch (InvalidPropertiesFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		if(this.paths.size()==1) {
-			this.nextStep=path.getPoints().get(0);
+			if(!points.isEmpty())
+				this.nextStep=path.getPoints().get(0);
+			else this.nextStep=this.location;
 			currPath=path;
 		}
 	}
-	
+
 	public Fruit getLastEaten() {
 		return lastEaten;
 	}

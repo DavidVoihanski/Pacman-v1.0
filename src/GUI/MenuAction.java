@@ -9,7 +9,6 @@ import java.util.InvalidPropertiesFormatException;
 
 import javax.swing.JFileChooser;
 
-import File_format.Game2Kml;
 import algorithm.ShortestPathAlgo;
 import gameUtils.Game;
 import gameUtils.Paired;
@@ -46,6 +45,8 @@ class MenuAction implements ActionListener {
 			}
 			/////////////
 		} else if (e.getActionCommand().equals("save the game as CSV file")) {
+			MyFrame.isFruitAdding = false;
+			MyFrame.isPackmanAdding = false;
 			int retrival = guiInstance.fc.showSaveDialog(null);
 			if (retrival == JFileChooser.APPROVE_OPTION) {
 				guiInstance.saveGameAsCsv(guiInstance.fc.getSelectedFile().getPath());
@@ -53,6 +54,8 @@ class MenuAction implements ActionListener {
 		}
 		/////////////
 		else if (e.getActionCommand().equals("run movment simulation")) {
+			MyFrame.isFruitAdding = false;
+			MyFrame.isPackmanAdding = false;
 			Game game = guiInstance.getGame();
 			try {
 				ArrayList<Paired> pairs = ShortestPathAlgo.findPaths(game);
@@ -69,16 +72,22 @@ class MenuAction implements ActionListener {
 		}
 		/////////////
 		else if (e.getActionCommand().equals("save as KML")) {
-			System.out.println("saving as KML");
-			Game game = guiInstance.getGame();
-			ArrayList<Paired> pairs =null;
-			try {
-				pairs = ShortestPathAlgo.findPaths(game);
-			} catch (InvalidPropertiesFormatException e1) {
-				System.out.println("ERR=> ShortestPathAlgo");
-				e1.printStackTrace();
+			MyFrame.isFruitAdding = false;
+			MyFrame.isPackmanAdding = false;
+			JFileChooser fc = guiInstance.fc;
+			int returnValue = fc.showOpenDialog(null);
+			if (returnValue == JFileChooser.APPROVE_OPTION) {
+				File selectedFile = fc.getSelectedFile();
+				guiInstance.saveKml(selectedFile.getPath());
+				System.out.println("saving as KML");
 			}
-			Game2Kml.game2Kml(pairs);
+		}
+		/////////////
+		else if (e.getActionCommand().equals("clear all")) {
+			MyFrame.isFruitAdding = false;
+			MyFrame.isPackmanAdding = false;
+			this.guiInstance.paint(this.guiInstance.getGraphics());
+			this.guiInstance.newGame();
 		}
 	}
 }
