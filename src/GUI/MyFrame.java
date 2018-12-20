@@ -268,7 +268,7 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 		return this.thisGuisGame;
 	}
 
-	private void showGame(Game givenGame) {
+	public void showGame(Game givenGame) {
 		for (int i = 0; i < this.thisGuisGame.getPackCollection().size(); i++) {
 			Pacman current = this.thisGuisGame.getPackCollection().get(i);
 			this.imagePanel.drawingPackman((int) (this.gameMap.gpsToPixel(current.getLocation()).y()-10),
@@ -282,13 +282,14 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 	}
 
 	public void start() throws InterruptedException {
-		while (!this.thisGuisGame.getFruitCollection().isEmpty()) {
-			this.thisGuisGame.move();
-			repaint();
-			Thread.sleep(50);
-			this.showGame(thisGuisGame);
-			Thread.sleep(40);
-		}
+//		while (!this.thisGuisGame.getFruitCollection().isEmpty()) {
+//			this.thisGuisGame.move();
+//			repaint();
+//			Thread.sleep(50);
+//			this.showGame(thisGuisGame);
+//			Thread.sleep(40);
+//		}
+		new Thread(new GuiWorker(thisGuisGame,this,imagePanel,gameMap)).start();
 	}
 	//*******CSV converter*******
 		public void loadCsvToGame(String path) throws IOException {

@@ -126,7 +126,6 @@ public abstract class ShortestPathAlgo {
 		bestPair.getPackman().setEndTargetLocation(bestFruit.getLocation());
 		bestPair.getPackman().setMoving(true);
 		saveFruits.add(bestFruit);
-		//bestPair.getPackman().setMoving(true);
 		return bestPair;
 	}
 }
