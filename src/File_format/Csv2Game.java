@@ -44,7 +44,7 @@ public abstract class Csv2Game {
 		it.next();// skipping first line of CSV file
 		while (it.hasNext()) {
 			String[] currentLine = it.next();// iterating through all CSV lines
-			if (currentLine[0].equals("P")) {// in case the line is "about" a pacman
+			if (currentLine[0].equals("P")) {// in case the CSV line is "about" a pacman
 				GpsCoord pacmansGPS = null;
 				try {
 					pacmansGPS = new GpsCoord(Double.parseDouble(currentLine[2]), Double.parseDouble(currentLine[3]),
@@ -53,11 +53,11 @@ public abstract class Csv2Game {
 					System.out.println("wrong GPS coord from CSV file");
 					e.printStackTrace();
 				}
-				Pacman newP = new Pacman(pacmansGPS, (int) gameMap.gpsToPixel(pacmansGPS).x(),
-						(int) gameMap.gpsToPixel(pacmansGPS).y(), (Double.parseDouble(currentLine[5])),
+				Pacman newP = new Pacman(pacmansGPS, (int) gameMap.gps2Pixel(pacmansGPS).x(),
+						(int) gameMap.gps2Pixel(pacmansGPS).y(), (Double.parseDouble(currentLine[5])),
 						(Double.parseDouble(currentLine[6])));//creating a new pacman
 				outputGame.addPacman(newP);//adding it to the game
-			} else {//in case the lin is "about" a fruit
+			} else {//in case the CSV line is "about" a fruit
 				GpsCoord fruitsGPS = null;
 				try {
 					fruitsGPS = new GpsCoord(Double.parseDouble(currentLine[2]), Double.parseDouble(currentLine[3]),
@@ -66,12 +66,12 @@ public abstract class Csv2Game {
 					System.out.println("wrong GPS coord from CSV file");
 					e.printStackTrace();
 				}
-				Fruit newF = new Fruit(fruitsGPS, (int) gameMap.gpsToPixel(fruitsGPS).x(),
-						(int) gameMap.gpsToPixel(fruitsGPS).y(), Double.parseDouble(currentLine[5]));//creating a new fruit
+				Fruit newF = new Fruit(fruitsGPS, (int) gameMap.gps2Pixel(fruitsGPS).x(),
+						(int) gameMap.gps2Pixel(fruitsGPS).y(), Double.parseDouble(currentLine[5]));//creating a new fruit
 				outputGame.addFruit(newF);//adding it to the game
 			}
 		}
-		return outputGame;//returning the game ouput
+		return outputGame;//returning the game output
 	}
 
 	// this method reads a CSV file from certain path
