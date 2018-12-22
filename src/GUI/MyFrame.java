@@ -31,18 +31,32 @@ import algorithm.ShortestPathAlgo;
 import gameUtils.Fruit;
 import gameUtils.Game;
 import gameUtils.Map;
-import gameUtils.MapFactory;
 import gameUtils.Pacman;
 import gameUtils.Paired;
 
+/**
+ * this class is the GUI window which the game is showed in
+ * 
+ * @author Evgeny & David
+ *
+ */
 public class MyFrame extends JFrame implements MouseListener, ComponentListener, MenuListener, ActionListener {
 	private static final long serialVersionUID = 1L;
+	// game related data
 	private Map gameMap;
+	private Game thisGuisGame;
+	// games map image
 	private BufferedImage gameChangingImage;
-	public static Point3D lastClicked;
+	private ImagePanel imagePanel;
+	// static data based on window size
 	public static int height;
 	public static int width;
-	private ImagePanel imagePanel;
+	// last pixel clicked
+	public static Point3D lastClicked;
+	// boolean values used to indicate clicked buttons
+	public static boolean isPackmanAdding;
+	public static boolean isFruitAdding;
+	// menu buttons and file chooser
 	private JMenu mainMenu;
 	private JMenu subMenuDefaultGame;
 	private JMenu existingGame;
@@ -53,13 +67,13 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 	private JMenuItem saveAsCsv;
 	private JMenuItem saveAsKml;
 	private JMenuItem play;
-	public static boolean isPackmanAdding;
-	public static boolean isFruitAdding;
-	private Game thisGuisGame;
-	public final JFileChooser fc = new JFileChooser("C:" + File.separator + "Users" + File.separator + "evgen"
-			+ File.separator + "eclipse-workspace" + File.separator + "Assignment3" + File.separator + "config");
+	public JFileChooser fc;
 	private JMenuItem clear;
 
+	/**
+	 * 
+	 * @throws IOException
+	 */
 	public MyFrame() throws IOException {
 		initComponents();
 		this.addMouseListener(this);
@@ -117,8 +131,7 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 			this.imagePanel.drawingPackman(arg0.getX() - 10, arg0.getY() - 10, getGraphics());
 			Pacman current = null;
 			try {
-				current = new Pacman(new GpsCoord(this.gameMap.pixel2Gps()), arg0.getX() - 10, arg0.getY() - 10,
-						1, 1);
+				current = new Pacman(new GpsCoord(this.gameMap.pixel2Gps()), arg0.getX() - 10, arg0.getY() - 10, 1, 1);
 			} catch (InvalidPropertiesFormatException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -132,8 +145,7 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 			this.imagePanel.drawingFruit(arg0.getX() - 10, arg0.getY() - 10, getGraphics());
 			Fruit current = null;
 			try {
-				current = new Fruit(new GpsCoord(this.gameMap.pixel2Gps()), arg0.getX() - 10, arg0.getY() - 10,
-						1);
+				current = new Fruit(new GpsCoord(this.gameMap.pixel2Gps()), arg0.getX() - 10, arg0.getY() - 10, 1);
 			} catch (InvalidPropertiesFormatException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -178,79 +190,10 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 
 	}
 
-//*******private methods*******
-	private void initComponents() throws IOException {
-		// now building the menu bar and all its features
-		JMenuBar menuBar = new JMenuBar();
-		// menu first - external "button:
-		this.mainMenu = new JMenu("Menu");
-		mainMenu.setMnemonic(KeyEvent.VK_R);
-		mainMenu.addMenuListener(this);
-		// creating subMenus
-		this.subMenuDefaultGame = new JMenu("default game");
-		subMenuDefaultGame.setMnemonic(KeyEvent.VK_R);
-		subMenuDefaultGame.addMenuListener(this);
-		// creating all menuItems for default game
-		this.existingGame = new JMenu("play existing game");
-		existingGame.setMnemonic(KeyEvent.VK_R);
-		existingGame.addMenuListener(this);
-		this.loadCsv = new JMenuItem("load CSV file");
-		loadCsv.setMnemonic(KeyEvent.VK_R);
-		loadCsv.addActionListener(new MenuAction(this));
-		existingGame.add(loadCsv);
-		subMenuDefaultGame.add(existingGame);
-		this.newGame = new JMenu("build your own game");
-		newGame.setMnemonic(KeyEvent.VK_R);
-		this.packman = new JMenuItem("add pacman");
-		packman.setMnemonic(KeyEvent.VK_R);
-		packman.addActionListener(new MenuAction(this));
-		this.fruit = new JMenuItem("add fruit");
-		fruit.setMnemonic(KeyEvent.VK_R);
-		fruit.addActionListener(new MenuAction(this));
-		this.saveAsCsv = new JMenuItem("save the game as CSV file");
-		saveAsCsv.setMnemonic(KeyEvent.VK_R);
-		saveAsCsv.addActionListener(new MenuAction(this));
-		newGame.add(packman);
-		newGame.add(fruit);
-		newGame.add(saveAsCsv);
-		subMenuDefaultGame.add(newGame);
-		mainMenu.add(subMenuDefaultGame);
-		// creating menu items
-		this.saveAsKml = new JMenuItem("save as KML");
-		saveAsKml.setMnemonic(KeyEvent.VK_R);
-		saveAsKml.addActionListener(new MenuAction(this));
-		this.play = new JMenuItem("run movment simulation");
-		play.setMnemonic(KeyEvent.VK_R);
-		play.addActionListener(new MenuAction(this));
-		this.clear = new JMenuItem("clear all");
-		clear.setMnemonic(KeyEvent.VK_R);
-		clear.addActionListener(new MenuAction(this));
-		// adding last menu items to the main one
-		mainMenu.add(play);
-		mainMenu.add(saveAsKml);
-		mainMenu.add(clear);
-		// adding the main menu to the menu bar
-		menuBar.add(mainMenu);
-		this.setJMenuBar(menuBar);
-		this.gameMap = new Map();
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.gameChangingImage = this.gameMap.getImage();
-		this.imagePanel = new ImagePanel(this.gameChangingImage);
-		this.getContentPane().add(imagePanel);
-		this.pack();
-		this.setVisible(true);
-		height = this.getHeight() - 22;
-		width = this.getWidth() - 79;
-		isPackmanAdding = false;
-		isFruitAdding = false;
-	}
 
 // *******action listener*******
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.equals(this.packman)) {
-			System.out.println("packmans");
-		}
 	}
 
 //*******menu listener*******
@@ -344,5 +287,75 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 	public void newGame() {
 		this.thisGuisGame = new Game(new ArrayList<Pacman>(), new ArrayList<Fruit>());
 	}
+	
+
+	//*******private methods*******
+		private void initComponents() throws IOException {
+			// now building the menu bar and all its features
+			JMenuBar menuBar = new JMenuBar();
+			// menu first - external "button:
+			this.mainMenu = new JMenu("Menu");
+			mainMenu.setMnemonic(KeyEvent.VK_R);
+			mainMenu.addMenuListener(this);
+			// creating subMenus
+			this.subMenuDefaultGame = new JMenu("default game");
+			subMenuDefaultGame.setMnemonic(KeyEvent.VK_R);
+			subMenuDefaultGame.addMenuListener(this);
+			// creating all menuItems for default game
+			this.existingGame = new JMenu("play existing game");
+			existingGame.setMnemonic(KeyEvent.VK_R);
+			existingGame.addMenuListener(this);
+			this.loadCsv = new JMenuItem("load CSV file");
+			loadCsv.setMnemonic(KeyEvent.VK_R);
+			loadCsv.addActionListener(new MenuAction(this));
+			existingGame.add(loadCsv);
+			subMenuDefaultGame.add(existingGame);
+			this.newGame = new JMenu("build your own game");
+			newGame.setMnemonic(KeyEvent.VK_R);
+			this.packman = new JMenuItem("add pacman");
+			packman.setMnemonic(KeyEvent.VK_R);
+			packman.addActionListener(new MenuAction(this));
+			this.fruit = new JMenuItem("add fruit");
+			fruit.setMnemonic(KeyEvent.VK_R);
+			fruit.addActionListener(new MenuAction(this));
+			this.saveAsCsv = new JMenuItem("save the game as CSV file");
+			saveAsCsv.setMnemonic(KeyEvent.VK_R);
+			saveAsCsv.addActionListener(new MenuAction(this));
+			newGame.add(packman);
+			newGame.add(fruit);
+			newGame.add(saveAsCsv);
+			subMenuDefaultGame.add(newGame);
+			mainMenu.add(subMenuDefaultGame);
+			// creating menu items
+			this.saveAsKml = new JMenuItem("save as KML");
+			saveAsKml.setMnemonic(KeyEvent.VK_R);
+			saveAsKml.addActionListener(new MenuAction(this));
+			this.play = new JMenuItem("run movment simulation");
+			play.setMnemonic(KeyEvent.VK_R);
+			play.addActionListener(new MenuAction(this));
+			this.clear = new JMenuItem("clear all");
+			clear.setMnemonic(KeyEvent.VK_R);
+			clear.addActionListener(new MenuAction(this));
+			// adding last menu items to the main one
+			mainMenu.add(play);
+			mainMenu.add(saveAsKml);
+			mainMenu.add(clear);
+			// adding the main menu to the menu bar
+			this.fc = new JFileChooser();
+			fc.setCurrentDirectory(new File("config"));
+			menuBar.add(mainMenu);
+			this.setJMenuBar(menuBar);
+			this.gameMap = new Map();
+			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			this.gameChangingImage = this.gameMap.getImage();
+			this.imagePanel = new ImagePanel(this.gameChangingImage);
+			this.getContentPane().add(imagePanel);
+			this.pack();
+			this.setVisible(true);
+			height = this.getHeight() - 22;
+			width = this.getWidth() - 79;
+			isPackmanAdding = false;
+			isFruitAdding = false;
+		}
 
 }

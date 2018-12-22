@@ -1,6 +1,7 @@
 package GUI;
 
 import java.awt.event.ActionEvent;
+
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
@@ -13,9 +14,21 @@ import algorithm.ShortestPathAlgo;
 import gameUtils.Game;
 import gameUtils.Paired;
 
+/**
+ * this class was created to deal with "menu action" , i.e pressing the menu
+ * buttons in the GUI window
+ * 
+ * @author Evgeny & David
+ *
+ */
 class MenuAction implements ActionListener {
 	private MyFrame guiInstance;
 
+	/**
+	 * basic constructor - only gets the GUI instance it was called from
+	 * 
+	 * @param instance
+	 */
 	public MenuAction(MyFrame instance) {
 		this.guiInstance = instance;
 	}
@@ -26,11 +39,11 @@ class MenuAction implements ActionListener {
 			System.out.println("add packman");
 			MyFrame.isFruitAdding = false;
 			MyFrame.isPackmanAdding = true;
-			////////////////
+			//******************************************//
 		} else if (e.getActionCommand().equals("add fruit")) {
 			MyFrame.isPackmanAdding = false;
 			MyFrame.isFruitAdding = true;
-			///////////////
+			//******************************************//
 		} else if (e.getActionCommand().equals("load CSV file")) {
 			JFileChooser fc = guiInstance.fc;
 			int returnValue = fc.showOpenDialog(null);
@@ -43,7 +56,7 @@ class MenuAction implements ActionListener {
 					e1.printStackTrace();
 				}
 			}
-			/////////////
+			//******************************************//
 		} else if (e.getActionCommand().equals("save the game as CSV file")) {
 			MyFrame.isFruitAdding = false;
 			MyFrame.isPackmanAdding = false;
@@ -52,7 +65,7 @@ class MenuAction implements ActionListener {
 				guiInstance.saveGameAsCsv(guiInstance.fc.getSelectedFile().getPath());
 			}
 		}
-		/////////////
+		//******************************************//
 		else if (e.getActionCommand().equals("run movment simulation")) {
 			MyFrame.isFruitAdding = false;
 			MyFrame.isPackmanAdding = false;
@@ -70,7 +83,7 @@ class MenuAction implements ActionListener {
 				e1.printStackTrace();
 			}
 		}
-		/////////////
+		//******************************************//
 		else if (e.getActionCommand().equals("save as KML")) {
 			MyFrame.isFruitAdding = false;
 			MyFrame.isPackmanAdding = false;
@@ -82,7 +95,7 @@ class MenuAction implements ActionListener {
 				System.out.println("saving as KML");
 			}
 		}
-		/////////////
+		//******************************************//
 		else if (e.getActionCommand().equals("clear all")) {
 			MyFrame.isFruitAdding = false;
 			MyFrame.isPackmanAdding = false;
