@@ -13,7 +13,7 @@ for pacman movement, i.e. the "movement simulation", and the helping class we
 created called "paired"- represents a pair of fruit and a robot connected by a
 path.
 
-![](media/8aa4c8c055282490dac2b9d71de949b1.png)
+![second](https://user-images.githubusercontent.com/44900773/50386942-85545d00-06fa-11e9-94fb-1d0bed56c99c.png)
 
 Furthermore, we got the "File_format" package which deals with converting game
 to CSV/KML file types and loading CSV file's to create a game
@@ -62,7 +62,7 @@ examples in the shortest time we could measure.
 
 **How to run it?**
 
-![](media/97bece7a5b4df2460f9529edfbfb40a7.png)
+![third](https://user-images.githubusercontent.com/44900773/50386945-943b0f80-06fa-11e9-90f4-9663f6692c93.png)
 
 There is a class called "EntryPoint" in the GUI package, this is the only class
 that contains a main method – which means this is the class to "run".
@@ -74,17 +74,17 @@ Now, we got 2 "game mode's"-
 **Creating your own game**, which means placing fruits and pacmans on the screen
 manually by clicking on the screen
 
-![](media/5cdd730e1bafc1dd9b5e09db5a3ae352.png)
 
-![](media/3fbd11538f14a167ddf9ea1f9ab7030e.jpg)
+![4th](https://user-images.githubusercontent.com/44900773/50386953-ac129380-06fa-11e9-8fe8-3bc4cfeb07f1.png)
 
 After creating a game, you could save it as a CSV file which you can later load
 
-![](media/ec1a50ac3c6e1c84f18e64eb7e3c856a.jpg)
+![FIFTH](https://user-images.githubusercontent.com/44900773/50386957-bfbdfa00-06fa-11e9-901f-fe7607594861.jpg)
 
 or you could just run the movement simulation and watch the pacman robots eat
 your fruit
 
+![6](https://user-images.githubusercontent.com/44900773/50386964-d2d0ca00-06fa-11e9-82c1-8c4059ece973.jpg)
 Notice that pacmans run in "real time" based on their speed configuration.
 
 In case you **don’t** want to run the game, you can always press "clear all" to
@@ -94,7 +94,8 @@ running).
 Now, our second "game mode": loading a default-pre-made game from the "config"
 directory (or any other directory on your computer)
 
-![](media/bd603e703f4e8a660a458af4b39abbf3.jpg)
+
+![7](https://user-images.githubusercontent.com/44900773/50386976-fdbb1e00-06fa-11e9-8ef4-3fc7196a9b9d.jpg)
 
 You can load any of the six already built games (can be found on the "config"
 directory), or you can load any of the games you saved.
@@ -108,14 +109,15 @@ map").
 
 This allows us saving games in KML
 
-![](media/75e3f1cd83edc0fc4f60acee73547c05.jpg)
+![8](https://user-images.githubusercontent.com/44900773/50386977-0dd2fd80-06fb-11e9-8aaa-eda5451c9b38.jpg)
 
 And running these games in google earth, which will describe the game – pacman
 moving through their paths and fruits getting eaten and disappear, as you can
 see (KML based on the example you just seen)
 
-![](media/008eca1c1ed3d24e83435aebfa4f2e9e.jpg)
+![9](https://user-images.githubusercontent.com/44900773/50386980-1a575600-06fb-11e9-87bf-5695f5626e7c.jpg)
 
 Now if we'll push the "time span" meter we will see the fruits disappear
 
-![](media/f06dfe6af4b3aa766e0a2d62fbd73c18.jpg)
+![10](https://user-images.githubusercontent.com/44900773/50386985-24795480-06fb-11e9-8f8b-993db190e0a4.jpg)
+
