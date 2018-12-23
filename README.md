@@ -2,7 +2,7 @@
 
 **System structure:**
 
-![](media/8c3a5923239ec5fa7866dd4d46b4170d.png)
+![first](https://user-images.githubusercontent.com/44900773/50386939-69e95200-06fa-11e9-889e-80cd275aa791.png)
 
 in this UML diagram you can see the GUI related classes on the left side, game
 related classes on the right side and the link between these two in the middle,
