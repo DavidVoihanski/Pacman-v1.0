@@ -71,6 +71,7 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 	private JMenuItem clear;
 
 	/**
+	 * basic constructor
 	 * 
 	 * @throws IOException
 	 */
@@ -79,6 +80,98 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 		this.addMouseListener(this);
 		this.addComponentListener(this);
 		this.thisGuisGame = new Game(new ArrayList<Pacman>(), new ArrayList<Fruit>());
+	}
+
+	// ****public methods
+
+	/**
+	 * 
+	 * @return the game this GUI represents as for right now
+	 */
+	public Game getGame() {
+		return this.thisGuisGame;
+	}
+
+	/**
+	 * shows all the fruits and pacman on the screen
+	 */
+	public void showGame() {
+		showPacman();
+		showFruit();
+	}
+
+	/**
+	 * start moving the pacmans on the screen
+	 * 
+	 * @throws InterruptedException
+	 */
+	public void start() throws InterruptedException {
+		new Thread(new GuiWorker(thisGuisGame, this, imagePanel, gameMap)).start();
+	}
+
+	/**
+	 * restarts the game which connected to this GUI
+	 */
+	public void newGame() {
+		this.thisGuisGame = new Game(new ArrayList<Pacman>(), new ArrayList<Fruit>());
+	}
+
+	// *******CSV related*******
+
+	/**
+	 * used to handle the "load CSV" request, load a CSV file as a game
+	 * configuration file
+	 * 
+	 * @param path the path in which the CSV file you want to load is found
+	 * @throws IOException
+	 */
+	public void loadCsvToGame(String path) throws IOException {
+		// in case there are objects on the "field" -> delete them before setting the
+		// new
+		// game
+		if (!this.thisGuisGame.getFruitCollection().isEmpty() || !this.thisGuisGame.getPackCollection().isEmpty()) {
+			newGame();
+			paint(getGraphics());
+			try {
+				Thread.sleep(5);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		// set the new game from the CSV file
+		this.thisGuisGame = Csv2Game.convertCsv2Game(path, this.gameMap);
+		// show the new game
+		this.showGame();
+	}
+
+	/**
+	 * save this created game as a CSV file in a certain path
+	 * 
+	 * @param path the path you wish to save the file as CSV in
+	 */
+	public void saveGameAsCsv(String path) {
+		Game2CSV.game2CSV(path, this.thisGuisGame);
+		System.out.println("done");
+	}
+
+	/**
+	 * used to handle the "save as KML" request, saves this certain file as a KML
+	 * file which can be interpreted by google earth
+	 * 
+	 * @param path the path you wish to save the file as KML in
+	 */
+	public void saveKml(String path) {
+		ArrayList<Paired> pairs = null;
+		try {
+			pairs = ShortestPathAlgo.findPaths(this.thisGuisGame);// as we want the full movement of the game we'll
+																	// first "solve" it with the algorithm
+		} catch (InvalidPropertiesFormatException e1) {
+			System.out.println("ERR=> ShortestPathAlgo");
+			e1.printStackTrace();
+		}
+		Game2Kml.game2Kml(pairs, path);
+
 	}
 
 //*******component listener*******
@@ -94,27 +187,23 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 
 	}
 
+//this method is used for changing the image with every change of window size 
 	@Override
 	public void componentResized(ComponentEvent arg0) {
+		// save the height and width of the screen as static sata members
 		height = this.getHeight() - 79;
 		width = this.getWidth() - 22;
+		// resize the actual image
 		this.imagePanel.resizeImage(width, height);
+		// make the thread "go to sleep" to avoid smearing the screen
 		try {
 			Thread.sleep(20);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		for (int i = 0; i < this.thisGuisGame.getPackCollection().size(); i++) {
-			Pacman current = this.thisGuisGame.getPackCollection().get(i);
-			this.imagePanel.drawingPackman((int) (this.gameMap.gps2Pixel(current.getLocation()).y() - 10),
-					(int) (this.gameMap.gps2Pixel(current.getLocation()).x()) + 44, getGraphics());
-		}
-		for (Fruit current : this.thisGuisGame.getFruitCollection()) {
-			GpsCoord gpsOfFruit = current.getLocation();
-			Point3D gps2pixel = this.gameMap.gps2Pixel(gpsOfFruit);
-			this.imagePanel.drawingFruit((int) gps2pixel.y() - 10, (int) gps2pixel.x() + 44, getGraphics());
-		}
+		// show the game again after every resize
+		showGame();
 	}
 
 	@Override
@@ -124,12 +213,25 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 	}
 
 //*******mouse listener******* 
+
+	// this is the method which enables us to put pacmans and fruits on the screen
+	// by clicking the mouse
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
+		// every click on pixels on the screen is saved in a static variable to let
+		// other classes
+		// approach it
+		lastClicked = new Point3D(arg0.getX(), arg0.getY(), 0);
+		// every click on the screen is saving the size of the window of other classes
+		// use
+		width = this.getWidth() - 22;
+		height = this.getHeight() - 79;
+		// in case the "add a pacman" button was clicked
 		if (isPackmanAdding) {
-			lastClicked = new Point3D(arg0.getX(), arg0.getY(), 0);
-			this.imagePanel.drawingPackman(arg0.getX() - 10, arg0.getY() - 10, getGraphics());
+			this.imagePanel.drawingPackman(arg0.getX() - 10, arg0.getY() - 10, getGraphics());// draw the pacman on the
+																								// screen
 			Pacman current = null;
+			// create the new pacman
 			try {
 				current = new Pacman(new GpsCoord(this.gameMap.pixel2Gps()), arg0.getX() - 10, arg0.getY() - 10, 1, 1);
 			} catch (InvalidPropertiesFormatException e) {
@@ -139,11 +241,14 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			// add it to the game
 			this.thisGuisGame.addPacman(current);
+			// in case the "add a fruit" button was clicked
 		} else if (isFruitAdding) {
-			lastClicked = new Point3D(arg0.getX(), arg0.getY(), 0);
-			this.imagePanel.drawingFruit(arg0.getX() - 10, arg0.getY() - 10, getGraphics());
+			this.imagePanel.drawingFruit(arg0.getX() - 10, arg0.getY() - 10, getGraphics());// draw the fruit on the
+			// screen
 			Fruit current = null;
+			// create the new fruit
 			try {
 				current = new Fruit(new GpsCoord(this.gameMap.pixel2Gps()), arg0.getX() - 10, arg0.getY() - 10, 1);
 			} catch (InvalidPropertiesFormatException e) {
@@ -154,15 +259,6 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 				e.printStackTrace();
 			}
 			this.thisGuisGame.addFruit(current);
-		}
-		width = this.getWidth() - 22;
-		height = this.getHeight() - 79;
-		lastClicked = new Point3D(arg0.getX(), arg0.getY(), 0);
-		try {
-			System.out.println("***" + this.gameMap.pixel2Gps());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -190,7 +286,6 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 
 	}
 
-
 // *******action listener*******
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -211,151 +306,94 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 
 	@Override
 	public void menuSelected(MenuEvent e) {
-		if (e.getSource().equals(this.subMenuDefaultGame)) {
-			System.out.println("menu clicked");
-		}
+
 	}
 
-	public Game getGame() {
-		return this.thisGuisGame;
-	}
+	// *******private methods*******
 
-	public void showGame(Game givenGame) {
+//used to initialize GUIs data members (buttons etc..)
+	private void initComponents() throws IOException {
+		// now building the menu bar and all its features
+		JMenuBar menuBar = new JMenuBar();
+		// menu first - external "button:
+		this.mainMenu = new JMenu("Menu");
+		mainMenu.setMnemonic(KeyEvent.VK_R);
+		mainMenu.addMenuListener(this);
+		// creating subMenus
+		this.subMenuDefaultGame = new JMenu("default game");
+		subMenuDefaultGame.setMnemonic(KeyEvent.VK_R);
+		subMenuDefaultGame.addMenuListener(this);
+		// creating all menuItems for default game
+		this.existingGame = new JMenu("play existing game");
+		existingGame.setMnemonic(KeyEvent.VK_R);
+		existingGame.addMenuListener(this);
+		this.loadCsv = new JMenuItem("load CSV file");
+		loadCsv.setMnemonic(KeyEvent.VK_R);
+		loadCsv.addActionListener(new MenuAction(this));
+		existingGame.add(loadCsv);
+		subMenuDefaultGame.add(existingGame);
+		this.newGame = new JMenu("build your own game");
+		newGame.setMnemonic(KeyEvent.VK_R);
+		this.packman = new JMenuItem("add pacman");
+		packman.setMnemonic(KeyEvent.VK_R);
+		packman.addActionListener(new MenuAction(this));
+		this.fruit = new JMenuItem("add fruit");
+		fruit.setMnemonic(KeyEvent.VK_R);
+		fruit.addActionListener(new MenuAction(this));
+		this.saveAsCsv = new JMenuItem("save the game as CSV file");
+		saveAsCsv.setMnemonic(KeyEvent.VK_R);
+		saveAsCsv.addActionListener(new MenuAction(this));
+		newGame.add(packman);
+		newGame.add(fruit);
+		newGame.add(saveAsCsv);
+		subMenuDefaultGame.add(newGame);
+		mainMenu.add(subMenuDefaultGame);
+		// creating menu items
+		this.saveAsKml = new JMenuItem("save as KML");
+		saveAsKml.setMnemonic(KeyEvent.VK_R);
+		saveAsKml.addActionListener(new MenuAction(this));
+		this.play = new JMenuItem("run movment simulation");
+		play.setMnemonic(KeyEvent.VK_R);
+		play.addActionListener(new MenuAction(this));
+		this.clear = new JMenuItem("clear all");
+		clear.setMnemonic(KeyEvent.VK_R);
+		clear.addActionListener(new MenuAction(this));
+		// adding last menu items to the main one
+		mainMenu.add(play);
+		mainMenu.add(saveAsKml);
+		mainMenu.add(clear);
+		// adding the main menu to the menu bar
+		this.fc = new JFileChooser();
+		fc.setCurrentDirectory(new File("config"));
+		menuBar.add(mainMenu);
+		this.setJMenuBar(menuBar);
+		this.gameMap = new Map();
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.gameChangingImage = this.gameMap.getImage();
+		this.imagePanel = new ImagePanel(this.gameChangingImage);
+		this.getContentPane().add(imagePanel);
+		this.pack();
+		this.setVisible(true);
+		height = this.getHeight() - 22;
+		width = this.getWidth() - 79;
+		isPackmanAdding = false;
+		isFruitAdding = false;
+	}
+//used to "print" pacmans on the screen
+	private void showPacman() {
 		for (int i = 0; i < this.thisGuisGame.getPackCollection().size(); i++) {
 			Pacman current = this.thisGuisGame.getPackCollection().get(i);
 			this.imagePanel.drawingPackman((int) (this.gameMap.gps2Pixel(current.getLocation()).y() - 10),
 					(int) (this.gameMap.gps2Pixel(current.getLocation()).x()) + 44, getGraphics());
 		}
+	}
+//used to "print" fruit on the screen
+	private void showFruit() {
 		for (Fruit current : this.thisGuisGame.getFruitCollection()) {
 			GpsCoord gpsOfFruit = current.getLocation();
 			Point3D gps2pixel = this.gameMap.gps2Pixel(gpsOfFruit);
 			this.imagePanel.drawingFruit((int) gps2pixel.y() - 10, (int) gps2pixel.x() + 44, getGraphics());
 		}
 	}
-
-	public void start() throws InterruptedException {
-		new Thread(new GuiWorker(thisGuisGame, this, imagePanel, gameMap)).start();
-	}
-
-	// *******CSV converter*******
-	public void loadCsvToGame(String path) throws IOException {
-		if (!this.thisGuisGame.getFruitCollection().isEmpty() || !this.thisGuisGame.getPackCollection().isEmpty()) {
-			paint(getGraphics());
-			try {
-				Thread.sleep(5);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		this.thisGuisGame = Csv2Game.convertCsv2Game(path, this.gameMap);
-		Iterator<?> it = thisGuisGame.getFruitCollection().iterator();
-		int i = 0;
-		while (it.hasNext()) {
-			i++;
-			System.out.println("fruit NUM " + i);
-			it.next();
-		}
-		it = thisGuisGame.getPackCollection().iterator();
-		i = 0;
-		while (it.hasNext()) {
-			i++;
-			System.out.println("pac NUM " + i);
-			it.next();
-		}
-		this.showGame(this.thisGuisGame);
-		System.out.println("Shown");
-	}
-
-	public void saveGameAsCsv(String path) {
-		Game2CSV.game2CSV(path, this.thisGuisGame);
-		System.out.println("done");
-	}
-
-	public void saveKml(String path) {
-		ArrayList<Paired> pairs = null;
-		try {
-			pairs = ShortestPathAlgo.findPaths(this.thisGuisGame);
-		} catch (InvalidPropertiesFormatException e1) {
-			System.out.println("ERR=> ShortestPathAlgo");
-			e1.printStackTrace();
-		}
-		Game2Kml.game2Kml(pairs, path);
-
-	}
-
-	public void newGame() {
-		this.thisGuisGame = new Game(new ArrayList<Pacman>(), new ArrayList<Fruit>());
-	}
-	
-
-	//*******private methods*******
-		private void initComponents() throws IOException {
-			// now building the menu bar and all its features
-			JMenuBar menuBar = new JMenuBar();
-			// menu first - external "button:
-			this.mainMenu = new JMenu("Menu");
-			mainMenu.setMnemonic(KeyEvent.VK_R);
-			mainMenu.addMenuListener(this);
-			// creating subMenus
-			this.subMenuDefaultGame = new JMenu("default game");
-			subMenuDefaultGame.setMnemonic(KeyEvent.VK_R);
-			subMenuDefaultGame.addMenuListener(this);
-			// creating all menuItems for default game
-			this.existingGame = new JMenu("play existing game");
-			existingGame.setMnemonic(KeyEvent.VK_R);
-			existingGame.addMenuListener(this);
-			this.loadCsv = new JMenuItem("load CSV file");
-			loadCsv.setMnemonic(KeyEvent.VK_R);
-			loadCsv.addActionListener(new MenuAction(this));
-			existingGame.add(loadCsv);
-			subMenuDefaultGame.add(existingGame);
-			this.newGame = new JMenu("build your own game");
-			newGame.setMnemonic(KeyEvent.VK_R);
-			this.packman = new JMenuItem("add pacman");
-			packman.setMnemonic(KeyEvent.VK_R);
-			packman.addActionListener(new MenuAction(this));
-			this.fruit = new JMenuItem("add fruit");
-			fruit.setMnemonic(KeyEvent.VK_R);
-			fruit.addActionListener(new MenuAction(this));
-			this.saveAsCsv = new JMenuItem("save the game as CSV file");
-			saveAsCsv.setMnemonic(KeyEvent.VK_R);
-			saveAsCsv.addActionListener(new MenuAction(this));
-			newGame.add(packman);
-			newGame.add(fruit);
-			newGame.add(saveAsCsv);
-			subMenuDefaultGame.add(newGame);
-			mainMenu.add(subMenuDefaultGame);
-			// creating menu items
-			this.saveAsKml = new JMenuItem("save as KML");
-			saveAsKml.setMnemonic(KeyEvent.VK_R);
-			saveAsKml.addActionListener(new MenuAction(this));
-			this.play = new JMenuItem("run movment simulation");
-			play.setMnemonic(KeyEvent.VK_R);
-			play.addActionListener(new MenuAction(this));
-			this.clear = new JMenuItem("clear all");
-			clear.setMnemonic(KeyEvent.VK_R);
-			clear.addActionListener(new MenuAction(this));
-			// adding last menu items to the main one
-			mainMenu.add(play);
-			mainMenu.add(saveAsKml);
-			mainMenu.add(clear);
-			// adding the main menu to the menu bar
-			this.fc = new JFileChooser();
-			fc.setCurrentDirectory(new File("config"));
-			menuBar.add(mainMenu);
-			this.setJMenuBar(menuBar);
-			this.gameMap = new Map();
-			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			this.gameChangingImage = this.gameMap.getImage();
-			this.imagePanel = new ImagePanel(this.gameChangingImage);
-			this.getContentPane().add(imagePanel);
-			this.pack();
-			this.setVisible(true);
-			height = this.getHeight() - 22;
-			width = this.getWidth() - 79;
-			isPackmanAdding = false;
-			isFruitAdding = false;
-		}
 
 }

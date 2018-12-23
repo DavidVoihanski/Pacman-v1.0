@@ -169,7 +169,7 @@ public class Map {
 	private void initDefMap() throws IOException {
 		mapH = topLeftP.distance2D(bottomLeftP);
 		mapW = bottomLeftP.distance2D(bottomRightP);
-		this.mapImage = ImageIO.read(new File("Ariel1.png"));
+		this.mapImage = ImageIO.read(new File("gameUtils" + File.separator + "Ariel1.png"));
 		originalHeigth = this.mapImage.getHeight();
 		originalWidth = this.mapImage.getWidth();
 		calcRatio();

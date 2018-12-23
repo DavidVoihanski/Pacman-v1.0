@@ -36,7 +36,7 @@ public class GuiWorker implements Runnable {
 
 		while (!this.thisGuisGame.getFruitCollection().isEmpty()) {//while the game continues -> move the robots to eat the fruit
 			thisGuisGame.move();
-			frame.showGame(thisGuisGame);
+			frame.showGame();
 			try {
 				Thread.sleep(30);
 			} catch (InterruptedException e) {
@@ -50,7 +50,7 @@ public class GuiWorker implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			frame.showGame(thisGuisGame);
+			frame.showGame();
 		}
 
 	}
