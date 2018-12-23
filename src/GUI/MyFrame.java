@@ -391,7 +391,7 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 		this.saveAsKml = new JMenuItem("save as KML");
 		saveAsKml.setMnemonic(KeyEvent.VK_R);
 		saveAsKml.addActionListener(new MenuAction(this));
-		this.play = new JMenuItem("run movment simulation");
+		this.play = new JMenuItem("run movement simulation");
 		play.setMnemonic(KeyEvent.VK_R);
 		play.addActionListener(new MenuAction(this));
 		this.clear = new JMenuItem("clear all");

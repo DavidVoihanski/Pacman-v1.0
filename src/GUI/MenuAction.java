@@ -65,7 +65,7 @@ class MenuAction implements ActionListener {
 			}
 		}
 		// ******************************************//
-		else if (e.getActionCommand().equals("run movment simulation")) {
+		else if (e.getActionCommand().equals("run movement simulation")) {
 			this.guiInstance.setIsAddingFruit(false);
 			this.guiInstance.setIsAddingPac(false);
 			Game game = guiInstance.getGame();
