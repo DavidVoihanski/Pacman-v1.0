@@ -91,7 +91,6 @@ class MenuAction implements ActionListener {
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
 				File selectedFile = fc.getSelectedFile();
 				guiInstance.saveKml(selectedFile.getPath());
-				System.out.println("saving as KML");
 			}
 		}
 		// ******************************************//

@@ -186,7 +186,7 @@ public abstract class Game2Kml {
 	// method to write KML using JAK library
 	private static void writeKml(String filePath, Kml kml) {
 		try {
-			kml.marshal(new File(filePath));
+			kml.marshal(new File(filePath+".kml"));
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("ERR in KML MARSHAL");
