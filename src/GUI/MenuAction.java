@@ -36,14 +36,13 @@ class MenuAction implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("add pacman")) {
-			System.out.println("add packman");
-			MyFrame.isFruitAdding = false;
-			MyFrame.isPackmanAdding = true;
-			//******************************************//
+			this.guiInstance.setIsAddingFruit(false);
+			this.guiInstance.setIsAddingPac(true);
+			// ******************************************//
 		} else if (e.getActionCommand().equals("add fruit")) {
-			MyFrame.isPackmanAdding = false;
-			MyFrame.isFruitAdding = true;
-			//******************************************//
+			this.guiInstance.setIsAddingPac(false);
+			this.guiInstance.setIsAddingFruit(true);
+			// ******************************************//
 		} else if (e.getActionCommand().equals("load CSV file")) {
 			JFileChooser fc = guiInstance.fc;
 			int returnValue = fc.showOpenDialog(null);
@@ -56,19 +55,19 @@ class MenuAction implements ActionListener {
 					e1.printStackTrace();
 				}
 			}
-			//******************************************//
+			// ******************************************//
 		} else if (e.getActionCommand().equals("save the game as CSV file")) {
-			MyFrame.isFruitAdding = false;
-			MyFrame.isPackmanAdding = false;
+			this.guiInstance.setIsAddingFruit(false);
+			this.guiInstance.setIsAddingPac(false);
 			int retrival = guiInstance.fc.showSaveDialog(null);
 			if (retrival == JFileChooser.APPROVE_OPTION) {
 				guiInstance.saveGameAsCsv(guiInstance.fc.getSelectedFile().getPath());
 			}
 		}
-		//******************************************//
+		// ******************************************//
 		else if (e.getActionCommand().equals("run movment simulation")) {
-			MyFrame.isFruitAdding = false;
-			MyFrame.isPackmanAdding = false;
+			this.guiInstance.setIsAddingFruit(false);
+			this.guiInstance.setIsAddingPac(false);
 			Game game = guiInstance.getGame();
 			try {
 				ArrayList<Paired> pairs = ShortestPathAlgo.findPaths(game);
@@ -83,10 +82,10 @@ class MenuAction implements ActionListener {
 				e1.printStackTrace();
 			}
 		}
-		//******************************************//
+		// ******************************************//
 		else if (e.getActionCommand().equals("save as KML")) {
-			MyFrame.isFruitAdding = false;
-			MyFrame.isPackmanAdding = false;
+			this.guiInstance.setIsAddingFruit(false);
+			this.guiInstance.setIsAddingPac(false);
 			JFileChooser fc = guiInstance.fc;
 			int returnValue = fc.showOpenDialog(null);
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -95,10 +94,10 @@ class MenuAction implements ActionListener {
 				System.out.println("saving as KML");
 			}
 		}
-		//******************************************//
+		// ******************************************//
 		else if (e.getActionCommand().equals("clear all")) {
-			MyFrame.isFruitAdding = false;
-			MyFrame.isPackmanAdding = false;
+			this.guiInstance.setIsAddingFruit(false);
+			this.guiInstance.setIsAddingPac(false);
 			this.guiInstance.paint(this.guiInstance.getGraphics());
 			this.guiInstance.newGame();
 		}

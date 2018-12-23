@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
-import java.util.Iterator;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -48,14 +47,11 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 	// games map image
 	private BufferedImage gameChangingImage;
 	private ImagePanel imagePanel;
-	// static data based on window size
-	public static int height;
-	public static int width;
 	// last pixel clicked
-	public static Point3D lastClicked;
+	private Point3D lastClicked;
 	// boolean values used to indicate clicked buttons
-	public static boolean isPackmanAdding;
-	public static boolean isFruitAdding;
+	private boolean isPackmanAdding;
+	private boolean isFruitAdding;
 	// menu buttons and file chooser
 	private JMenu mainMenu;
 	private JMenu subMenuDefaultGame;
@@ -115,9 +111,56 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 	public void newGame() {
 		this.thisGuisGame = new Game(new ArrayList<Pacman>(), new ArrayList<Fruit>());
 	}
-	//for junit test
+
+///////////////////////////////////////////////////
+	// ONLY used for JUnit testing
 	public void setLastClicked(Point3D p) {
-		lastClicked=p;
+		lastClicked = p;
+	}
+///////////////////////////////////////////////////
+
+	/**
+	 * 
+	 * @return the height of GUI's window normalized only to the image
+	 */
+	public int getH() {
+		return (this.getHeight() - 79);
+	}
+
+	/**
+	 * 
+	 * @return the width of GUI's window normalized only to the image
+	 */
+	public int getW() {
+		return (this.getWidth() - 22);
+	}
+
+	/**
+	 * 
+	 * @return last point clicked on GUI's window as pixels
+	 */
+	public Point3D getlastClicked() {
+		return this.lastClicked;
+	}
+
+	/**
+	 * setting the boolean value of "whether you want that every click on the screen
+	 * will add a pacman"
+	 * 
+	 * @param arg
+	 */
+	public void setIsAddingPac(boolean arg) {
+		this.isPackmanAdding = arg;
+	}
+
+	/**
+	 * setting the boolean value of "whether you want that every click on the screen
+	 * will add a fruit"
+	 * 
+	 * @param arg
+	 */
+	public void setIsAddingFruit(boolean arg) {
+		this.isFruitAdding = arg;
 	}
 	// *******CSV related*******
 
@@ -193,11 +236,8 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 //this method is used for changing the image with every change of window size 
 	@Override
 	public void componentResized(ComponentEvent arg0) {
-		// save the height and width of the screen as static sata members
-		height = this.getHeight() - 79;
-		width = this.getWidth() - 22;
 		// resize the actual image
-		this.imagePanel.resizeImage(width, height);
+		this.imagePanel.resizeImage(this.getW(), this.getH());
 		// make the thread "go to sleep" to avoid smearing the screen
 		try {
 			Thread.sleep(20);
@@ -221,14 +261,10 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 	// by clicking the mouse
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		// every click on pixels on the screen is saved in a static variable to let
+		// every click on pixels on the screen is saved in a variable to let
 		// other classes
 		// approach it
-		lastClicked = new Point3D(arg0.getX(), arg0.getY(), 0);
-		// every click on the screen is saving the size of the window of other classes
-		// use
-		width = this.getWidth() - 22;
-		height = this.getHeight() - 79;
+		this.lastClicked = new Point3D(arg0.getX(), arg0.getY());
 		// in case the "add a pacman" button was clicked
 		if (isPackmanAdding) {
 			this.imagePanel.drawingPackman(arg0.getX() - 10, arg0.getY() - 10, getGraphics());// draw the pacman on the
@@ -370,18 +406,22 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 		fc.setCurrentDirectory(new File("config"));
 		menuBar.add(mainMenu);
 		this.setJMenuBar(menuBar);
+		// initializing all data members
 		this.gameMap = new Map();
+		this.gameMap.setGui(this);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.gameChangingImage = this.gameMap.getImage();
 		this.imagePanel = new ImagePanel(this.gameChangingImage);
 		this.getContentPane().add(imagePanel);
+		this.isFruitAdding = false;
+		this.isPackmanAdding = false;
+		// setting the GUI and showing it
 		this.pack();
 		this.setVisible(true);
-		height = this.getHeight() - 22;
-		width = this.getWidth() - 79;
 		isPackmanAdding = false;
 		isFruitAdding = false;
 	}
+
 //used to "print" pacmans on the screen
 	private void showPacman() {
 		for (int i = 0; i < this.thisGuisGame.getPackCollection().size(); i++) {
@@ -390,6 +430,7 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 					(int) (this.gameMap.gps2Pixel(current.getLocation()).x()) + 44, getGraphics());
 		}
 	}
+
 //used to "print" fruit on the screen
 	private void showFruit() {
 		for (Fruit current : this.thisGuisGame.getFruitCollection()) {

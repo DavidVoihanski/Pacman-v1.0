@@ -29,6 +29,7 @@ public class Map {
 	private int originalWidth;
 	private double mapH;
 	private double mapW;
+	private MyFrame certainGui;
 
 	/**
 	 * basic default map constructor
@@ -61,7 +62,7 @@ public class Map {
 	}
 
 	// custom constructor//
-	public Map(double lat1, double lon1, double lat2, double lon2, String imagePath){
+	public Map(double lat1, double lon1, double lat2, double lon2, String imagePath) {
 		// TO BE MADE
 	}
 
@@ -73,7 +74,7 @@ public class Map {
 	 * @return the image of the map
 	 * @throws IOException
 	 */
-	public BufferedImage getImage(){
+	public BufferedImage getImage() {
 		return mapImage;
 	}
 
@@ -89,6 +90,16 @@ public class Map {
 		Point3D vectorMeter = calcDiffMeterVector();// calculating the difference meter vector and adding it to the to
 													// left pixel after we normalize it by the ratio
 		return (new GpsCoord(this.topLeftP.add(vectorMeter)));
+	}
+
+	/**
+	 * this method used to set maps GUI, we use it to know the size of the GUI
+	 * window
+	 * 
+	 * @param instance the instance of GUI which is connected to the map
+	 */
+	public void setGui(MyFrame instance) {
+		this.certainGui = instance;
 	}
 
 	/**
@@ -128,20 +139,20 @@ public class Map {
 
 	// calculating changing - dynamic height ratio
 	private double calcDymHRatio() {
-		double dynHeight = MyFrame.height;
+		double dynHeight = this.certainGui.getH();
 		return this.mapH / dynHeight;// the division between maps height and the current guis height
 	}
 
 	// calculating changing - dynamic width ratio
 	private double calcDymWRatio() {
-		double dynWidth = MyFrame.width;
+		double dynWidth = this.certainGui.getW();
 		return this.mapW / dynWidth;// the division between maps width and the current guis width
 	}
 
 	// calculating both width and height ratio and returning them both as a 3D point
 	private Point3D calcDynamicRatio() {
-		double dynHeight = MyFrame.height;
-		double dynWidth = MyFrame.width;
+		double dynHeight = this.certainGui.getH();
+		double dynWidth = this.certainGui.getW();
 		return new Point3D(dynHeight / originalHeigth, dynWidth / originalWidth, 0);
 	}
 
@@ -150,13 +161,13 @@ public class Map {
 	private Point3D calcDiffMeterVector() throws IOException {
 		Point3D dynamicRatio = calcDynamicRatio();// calculating the new - updated ratio based on the size of the screen
 													// right now
-		Point3D clicked = MyFrame.lastClicked;// saving the last clicked pixel as a 3D point
+		Point3D clicked = this.certainGui.getlastClicked();// saving the last clicked pixel as a 3D point
 		Point3D vector = new Point3D((((-1) * (clicked.y() - topLeftPixelCoord.y())) * (ratio / dynamicRatio.x())),
 				(clicked.x() * (ratio / dynamicRatio.y())), 0);// calculating the actual vector and returning it
 		return vector;
 	}
-	
-	//initializing the map used to make constructor less "ugly"
+
+	// initializing the map used to make constructor less "ugly"
 	private void initDefMap() throws IOException {
 		mapH = topLeftP.distance2D(bottomLeftP);
 		mapW = bottomLeftP.distance2D(bottomRightP);
