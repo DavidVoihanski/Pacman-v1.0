@@ -62,12 +62,13 @@ examples in the shortest time we could measure.
 
 **How to run it?**
 
-![third](https://user-images.githubusercontent.com/44900773/50386945-943b0f80-06fa-11e9-90f4-9663f6692c93.png)
 
 There is a class called "EntryPoint" in the GUI package, this is the only class
 that contains a main method – which means this is the class to "run".
 
 Now, as you are running it – it will open GUI's (MyFrame class) window:
+
+![third](https://user-images.githubusercontent.com/44900773/50386945-943b0f80-06fa-11e9-90f4-9663f6692c93.png)
 
 Now, we got 2 "game mode's"-
 
