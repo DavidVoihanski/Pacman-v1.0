@@ -61,7 +61,7 @@ public class Map {
 	}
 
 	// custom constructor//
-	public Map(double lat1, double lon1, double lat2, double lon2, String imagePath) throws IOException {
+	public Map(double lat1, double lon1, double lat2, double lon2, String imagePath){
 		// TO BE MADE
 	}
 
@@ -73,20 +73,11 @@ public class Map {
 	 * @return the image of the map
 	 * @throws IOException
 	 */
-	public BufferedImage getImage() throws IOException {
+	public BufferedImage getImage(){
 		return mapImage;
 	}
 
 	// setters
-	/**
-	 * setting the image of the map
-	 * 
-	 * @param inputImage the wanted image to set
-	 * @throws IOException
-	 */
-	public void setImage(BufferedImage inputImage) throws IOException {
-		mapImage = inputImage;
-	}
 
 	/**
 	 * returning a Gps Coord based on a given pixel on given map

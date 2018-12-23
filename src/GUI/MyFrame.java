@@ -115,7 +115,10 @@ public class MyFrame extends JFrame implements MouseListener, ComponentListener,
 	public void newGame() {
 		this.thisGuisGame = new Game(new ArrayList<Pacman>(), new ArrayList<Fruit>());
 	}
-
+	//for junit test
+	public void setLastClicked(Point3D p) {
+		lastClicked=p;
+	}
 	// *******CSV related*******
 
 	/**
