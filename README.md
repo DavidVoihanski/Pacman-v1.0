@@ -1,6 +1,6 @@
 **Third assignment in object-oriented programming course, Ariel uni.**
 
-*System structure:*
+**System structure:**
 
 ![](media/8c3a5923239ec5fa7866dd4d46b4170d.png)
 
@@ -18,7 +18,7 @@ path.
 Furthermore, we got the "File_format" package which deals with converting game
 to CSV/KML file types and loading CSV file's to create a game
 
-*About the move algorithm:*
+**About the move algorithm:**
 
 "shortest path algorithm" is the class which contains the algorithm responsible
 for pacman – toward fruits movement.
@@ -60,7 +60,7 @@ examples in the shortest time we could measure.
 
 9.  After all fruits are "gone", build paths between all pairs
 
-*How to run it?*
+**How to run it?**
 
 ![](media/97bece7a5b4df2460f9529edfbfb40a7.png)
 
